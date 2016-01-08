@@ -192,7 +192,7 @@ class CS355Frame extends javax.swing.JFrame implements KeyListener, MouseListene
         sendBackItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(648, 616));
+        setPreferredSize(new java.awt.Dimension(648, 648));
         setResizable(false);
 
         canvas.setBackground(new java.awt.Color(0, 0, 0));
