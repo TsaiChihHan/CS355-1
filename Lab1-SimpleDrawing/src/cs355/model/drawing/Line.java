@@ -25,6 +25,7 @@ public class Line extends Shape {
 
 		// Initialize the superclass.
 		super(color);
+		super.setShapeType(Shape.type.LINE);
 
 		// Set fields.
 		this.start = start;

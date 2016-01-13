@@ -25,6 +25,7 @@ public class Square extends Shape {
 
 		// Initialize the superclass.
 		super(color);
+		super.setShapeType(Shape.type.SQUARE);
 
 		// Set fields.
 		this.upperLeft = upperLeft;

@@ -25,6 +25,7 @@ public class Triangle extends Shape {
 
 		// Initialize the superclass.
 		super(color);
+		super.setShapeType(Shape.type.TRIANGLE);
 
 		// Set fields.
 		this.a = a;

@@ -29,6 +29,7 @@ public class Ellipse extends Shape {
 
 		// Initialize the superclass.
 		super(color);
+		super.setShapeType(Shape.type.ELLIPSE);
 
 		// Set fields.
 		this.center = center;
