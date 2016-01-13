@@ -18,13 +18,15 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	
 	private View view;
 	private ArrayList<Point2D.Double> trianglePoints;
-	private int currentShapeIndex = -1;
-	private Point2D.Double currentMouselocation;
+	private int currentShapeIndex;
+	private Point2D.Double mouseDragStart;
 
 	public Controller()
 	{
 		this.view = new View(); //creates view, which attaches itself as listener to model
-		this.trianglePoints = new ArrayList<Point2D.Double>(); //where we store mouse presses that will form a triangle
+		trianglePoints = new ArrayList<Point2D.Double>();
+		currentShapeIndex = -1;
+		mouseDragStart = null;
 	}
 
 	@Override
@@ -50,23 +52,23 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		switch (Drawing.instance().getCurrentShape()) 
 		{
 			case CIRCLE:
-				this.currentMouselocation = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
 				this.currentShapeIndex = Drawing.instance().addShape(new Circle(Drawing.instance().getCurrentColor(), point, 0));
 				break;
 			case ELLIPSE:
-				this.currentMouselocation = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
 				this.currentShapeIndex = Drawing.instance().addShape(new Ellipse(Drawing.instance().getCurrentColor(), point, 0, 0));
 				break;
 			case LINE:
-				this.currentMouselocation = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
 				this.currentShapeIndex = Drawing.instance().addShape(new Line(Drawing.instance().getCurrentColor(), point, point));
 				break;
 			case RECTANGLE:
-				this.currentMouselocation = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
 				this.currentShapeIndex = Drawing.instance().addShape(new Rectangle(Drawing.instance().getCurrentColor(), point, 0, 0));
 				break;
 			case SQUARE:
-				this.currentMouselocation = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
 				this.currentShapeIndex = Drawing.instance().addShape(new Square(Drawing.instance().getCurrentColor(), point, 0));
 				break;
 			default:
@@ -88,7 +90,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 				case RECTANGLE:
 				case SQUARE:
 					this.currentShapeIndex=-1;
-					this.currentMouselocation=null;
+					this.mouseDragStart=null;
 					break; //if we were manipulating  any of the above shapes, releasing mouse signals we are finished
 				default:
 					break;
@@ -113,7 +115,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	{
 		if (this.currentShapeIndex != -1) //if we are currently manipulating a shape
 		{
-			Drawing.instance().updateShape(this.currentShapeIndex, this.currentMouselocation, e);	
+			Drawing.instance().updateShape(this.currentShapeIndex, this.mouseDragStart, e);	
 		}
 	}
 

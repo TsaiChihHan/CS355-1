@@ -56,7 +56,6 @@ public class View implements ViewRefresher {
 	private void drawCircle(Graphics2D g2d, Circle c) 
 	{
 		double radius = c.getRadius();
-		
 		int x = (int) (c.getCenter().getX() - radius);
 		int y = (int) (c.getCenter().getY() - radius);
 		int width = (int) (2*radius);
@@ -107,10 +106,9 @@ public class View implements ViewRefresher {
 	
 	private void drawTriangle(Graphics2D g2d, Triangle t) 
 	{
-		int x_coordinates[] = {(int)t.getA().getX(), (int)t.getB().getX(), (int)t.getC().getX()};
-		int y_coordinates[] = {(int)t.getA().getY(), (int)t.getB().getY(), (int)t.getC().getY()};
+		int xCoordinates[] = {(int)t.getA().getX(), (int)t.getB().getX(), (int)t.getC().getX()};
+		int yCoordinates[] = {(int)t.getA().getY(), (int)t.getB().getY(), (int)t.getC().getY()};
 		
-		g2d.fillPolygon(x_coordinates, y_coordinates, 3);
+		g2d.fillPolygon(xCoordinates, yCoordinates, 3);
 	}
-
 }
