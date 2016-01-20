@@ -88,11 +88,15 @@ public class Drawing extends CS355Drawing {
 		if(height < 0)
 			y += height;
 		
-		Point2D.Double upperLeft = new Point2D.Double(x, y);
+		double centerX = x+Math.abs(width/2);
+		double centerY = y+Math.abs(height/2);
+		
+		Point2D.Double center = new Point2D.Double(centerX, centerY);
 	
 		r.setHeight(Math.abs(height));
 		r.setWidth(Math.abs(width));
-		r.setUpperLeft(upperLeft);
+		
+		r.setCenter(center);
 	}
 	
 	private void updateCircle(int index, Point2D.Double mouseDragStart, MouseEvent e)
@@ -124,10 +128,14 @@ public class Drawing extends CS355Drawing {
 		if(height < 0)
 			y -= Math.min(Math.abs(width),Math.abs(height));
 		
-		Point2D.Double upperLeft = new Point2D.Double(x, y);
-		
-		s.setUpperLeft(upperLeft);
 		s.setSize(Math.min(Math.abs(width),Math.abs(height)));
+		
+		double centerX = x+Math.abs(s.getSize()/2);
+		double centerY = y+Math.abs(s.getSize()/2);
+		
+		Point2D.Double center = new Point2D.Double(centerX, centerY);
+		
+		s.setCenter(center);
 	}
 	
 	//notifies observer (view) that the model has changed

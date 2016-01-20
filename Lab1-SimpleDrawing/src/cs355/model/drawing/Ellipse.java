@@ -2,6 +2,7 @@ package cs355.model.drawing;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 /**
  * Add your ellipse code here. You can add fields, but you cannot
@@ -10,7 +11,6 @@ import java.awt.geom.Point2D;
 public class Ellipse extends Shape {
 
 	// The center of this shape.
-	private Point2D.Double center;
 
 	// The width of this shape.
 	private double width;
@@ -28,29 +28,12 @@ public class Ellipse extends Shape {
 	public Ellipse(Color color, Point2D.Double center, double width, double height) {
 
 		// Initialize the superclass.
-		super(color);
+		super(color, center);
 		super.setShapeType(Shape.type.ELLIPSE);
 
 		// Set fields.
-		this.center = center;
 		this.width = width;
 		this.height = height;
-	}
-
-	/**
-	 * Getter for this shape's center.
-	 * @return this shape's center as a Java point.
-	 */
-	public Point2D.Double getCenter() {
-		return center;
-	}
-
-	/**
-	 * Setter for this shape's center.
-	 * @param center the new center as a Java point.
-	 */
-	public void setCenter(Point2D.Double center) {
-		this.center = center;
 	}
 
 	/**
@@ -83,5 +66,12 @@ public class Ellipse extends Shape {
 	 */
 	public void setHeight(double height) {
 		this.height = height;
+	}
+
+	@Override
+	public boolean pointInShape(Double pt, double tolerance)
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

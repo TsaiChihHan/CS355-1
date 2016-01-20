@@ -76,8 +76,8 @@ public class View implements ViewRefresher {
 	
 	private void drawLine(Graphics2D g2d, Line l) 
 	{
-		int x1 = (int)l.getStart().getX();
-		int y1 = (int)l.getStart().getY();
+		int x1 = (int)l.getCenter().getX();
+		int y1 = (int)l.getCenter().getY();
 		int x2 = (int)l.getEnd().getX();
 		int y2 = (int)l.getEnd().getY();
 		
@@ -86,8 +86,8 @@ public class View implements ViewRefresher {
 	
 	private void drawRectangle(Graphics2D g2d, Rectangle r) 
 	{
-		int x = (int) r.getUpperLeft().getX();
-		int y = (int) r.getUpperLeft().getY();
+		int x = (int) (r.getCenter().getX()-(r.getWidth()/2));
+		int y = (int) (r.getCenter().getY()-(r.getHeight()/2));
 		int width = (int) r.getWidth();
 		int height = (int) r.getHeight();
 		
@@ -96,8 +96,8 @@ public class View implements ViewRefresher {
 	
 	private void drawSquare(Graphics2D g2d, Square s) 
 	{
-		int x = (int) s.getUpperLeft().getX();
-		int y = (int) s.getUpperLeft().getY();
+		int x = (int) (s.getCenter().getX()-(s.getSize()/2));
+		int y = (int) (s.getCenter().getY()-(s.getSize()/2));
 		int width = (int) s.getSize();
 		int height = width;
 		

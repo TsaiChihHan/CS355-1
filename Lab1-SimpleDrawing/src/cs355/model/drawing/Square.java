@@ -2,15 +2,13 @@ package cs355.model.drawing;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 /**
  * Add your square code here. You can add fields, but you cannot
  * change the ones that already exist. This includes the names!
  */
 public class Square extends Shape {
-
-	// The upper left corner of this shape.
-	private Point2D.Double upperLeft;
 
 	// The size of this Square.
 	private double size;
@@ -21,31 +19,14 @@ public class Square extends Shape {
 	 * @param upperLeft the upper left corner of the new shape.
 	 * @param size the size of the new shape.
 	 */
-	public Square(Color color, Point2D.Double upperLeft, double size) {
+	public Square(Color color, Point2D.Double center, double size) {
 
 		// Initialize the superclass.
-		super(color);
+		super(color, center);
 		super.setShapeType(Shape.type.SQUARE);
 
 		// Set fields.
-		this.upperLeft = upperLeft;
 		this.size = size;
-	}
-
-	/**
-	 * Getter for this Rectangle's upper left corner.
-	 * @return the upper left corner as a Java point.
-	 */
-	public Point2D.Double getUpperLeft() {
-		return upperLeft;
-	}
-
-	/**
-	 * Setter for this Rectangle's upper left corner.
-	 * @param upperLeft the new upper left corner.
-	 */
-	public void setUpperLeft(Point2D.Double upperLeft) {
-		this.upperLeft = upperLeft;
 	}
 
 	/**
@@ -62,5 +43,12 @@ public class Square extends Shape {
 	 */
 	public void setSize(double size) {
 		this.size = size;
+	}
+
+	@Override
+	public boolean pointInShape(Double pt, double tolerance)
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

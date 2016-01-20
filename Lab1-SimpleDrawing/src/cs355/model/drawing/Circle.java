@@ -2,6 +2,7 @@ package cs355.model.drawing;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 /**
  * Add your circle code here. You can add fields, but you cannot
@@ -24,7 +25,7 @@ public class Circle extends Shape {
 	public Circle(Color color, Point2D.Double center, double radius) {
 
 		// Initialize the superclass.
-		super(color);
+		super(color, center);
 		super.setShapeType(Shape.type.CIRCLE);
 
 		// Set fields.
@@ -62,5 +63,12 @@ public class Circle extends Shape {
 	 */
 	public void setRadius(double radius) {
 		this.radius = radius;
+	}
+
+	@Override
+	public boolean pointInShape(Double pt, double tolerance)
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

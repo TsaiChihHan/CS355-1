@@ -2,15 +2,13 @@ package cs355.model.drawing;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 /**
  * Add your rectangle code here. You can add fields, but you cannot
  * change the ones that already exist. This includes the names!
  */
 public class Rectangle extends Shape {
-
-	// The upper left corner of this shape.
-	private Point2D.Double upperLeft;
 
 	// The width of this shape.
 	private double width;
@@ -25,32 +23,15 @@ public class Rectangle extends Shape {
 	 * @param width the width of the new shape.
 	 * @param height the height of the new shape.
 	 */
-	public Rectangle(Color color, Point2D.Double upperLeft, double width, double height) {
+	public Rectangle(Color color, Point2D.Double center, double width, double height) {
 
 		// Initialize the superclass.
-		super(color);
+		super(color, center);
 		super.setShapeType(Shape.type.RECTANGLE);
 
 		// Set fields.
-		this.upperLeft = upperLeft;
 		this.width = width;
 		this.height = height;
-	}
-
-	/**
-	 * Getter for this Rectangle's upper left corner.
-	 * @return the upper left corner as a Java point.
-	 */
-	public Point2D.Double getUpperLeft() {
-		return upperLeft;
-	}
-
-	/**
-	 * Setter for this Rectangle's upper left corner.
-	 * @param upperLeft the new upper left corner.
-	 */
-	public void setUpperLeft(Point2D.Double upperLeft) {
-		this.upperLeft = upperLeft;
 	}
 
 	/**
@@ -83,5 +64,12 @@ public class Rectangle extends Shape {
 	 */
 	public void setHeight(double height) {
 		this.height = height;
+	}
+
+	@Override
+	public boolean pointInShape(Double pt, double tolerance)
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

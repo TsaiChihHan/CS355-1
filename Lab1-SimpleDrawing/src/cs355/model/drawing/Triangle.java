@@ -2,6 +2,7 @@ package cs355.model.drawing;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 /**
  * Add your triangle code here. You can add fields, but you cannot
@@ -21,10 +22,10 @@ public class Triangle extends Shape {
 	 * @param b the second point.
 	 * @param c the third point.
 	 */
-	public Triangle(Color color, Point2D.Double a, Point2D.Double b, Point2D.Double c) {
+	public Triangle(Color color, Point2D.Double center, Point2D.Double a, Point2D.Double b, Point2D.Double c) {
 
 		// Initialize the superclass.
-		super(color);
+		super(color, center);
 		super.setShapeType(Shape.type.TRIANGLE);
 
 		// Set fields.
@@ -79,5 +80,12 @@ public class Triangle extends Shape {
 	 */
 	public void setC(Point2D.Double c) {
 		this.c = c;
+	}
+
+	@Override
+	public boolean pointInShape(Double pt, double tolerance)
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

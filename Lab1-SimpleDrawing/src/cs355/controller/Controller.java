@@ -37,7 +37,10 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 			this.trianglePoints.add(new Point2D.Double(e.getX(), e.getY()));
 			if (this.trianglePoints.size() == 3) //user placed final point needed to draw triangle
 			{
-				Drawing.instance().addShape(new Triangle(Drawing.instance().getCurrentColor(), trianglePoints.get(0), trianglePoints.get(1), trianglePoints.get(2)));
+				double centerX = (trianglePoints.get(0).getX() + trianglePoints.get(1).getX() + trianglePoints.get(2).getX())/3;
+				double centerY = (trianglePoints.get(0).getY() + trianglePoints.get(1).getY() + trianglePoints.get(2).getY())/3;
+				
+				Drawing.instance().addShape(new Triangle(Drawing.instance().getCurrentColor(), new Point2D.Double(centerX,centerY), trianglePoints.get(0), trianglePoints.get(1), trianglePoints.get(2)));
 				trianglePoints.clear();
 			}
 		}
