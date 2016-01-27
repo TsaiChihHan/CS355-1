@@ -51,10 +51,10 @@ public class Square extends Shape {
 	{
 		AffineTransform worldToObj = new AffineTransform();
 		worldToObj.rotate(-rotation);
-		worldToObj.translate(-center.getX(),-center.getX());
-		worldToObj.transform(pt, pt);
+		worldToObj.translate(-center.getX(),-center.getY());
+		worldToObj.transform(pt, pt); //transform pt to object coordinates
 		
-		double limit = (this.size/2);
+		double limit = (this.size/2); //how far point can be from center of square
 		double px = pt.getX();
 		double py = pt.getY();
 		

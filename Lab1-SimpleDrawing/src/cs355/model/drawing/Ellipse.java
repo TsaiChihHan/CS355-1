@@ -1,6 +1,7 @@
 package cs355.model.drawing;
 
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
@@ -71,13 +72,11 @@ public class Ellipse extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
-		double cx = center.getX();
-		double cy = center.getY();
-		double px = pt.getX();
-		double py = pt.getY();
-		double rx = width/2 + tolerance;
-		double ry = height/2 + tolerance;
+		AffineTransform worldToObj = new AffineTransform();
+		worldToObj.rotate(-rotation);
+		worldToObj.translate(-center.getX(),-center.getY());
+		worldToObj.transform(pt, pt); //transform pt to object coordinates
 		
-		return (Math.pow((px-cx), 2) / Math.pow(rx, 2)) + (Math.pow((py-cy), 2) / Math.pow(ry, 2)) <= 1;
+		return (Math.pow((pt.getX()), 2) / Math.pow((width/2), 2)) + (Math.pow((pt.getY()), 2) / Math.pow((height/2), 2)) <= 1;
 	}
 }

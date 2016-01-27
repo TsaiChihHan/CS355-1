@@ -72,8 +72,8 @@ public class Rectangle extends Shape {
 	{
 		AffineTransform worldToObj = new AffineTransform();
 		worldToObj.rotate(-rotation);
-		worldToObj.translate(-center.getX(),-center.getX());
-		worldToObj.transform(pt, pt);
+		worldToObj.translate(-center.getX(),-center.getY());
+		worldToObj.transform(pt, pt); //transform pt to object coordinates
 		
 		double limitX = (this.width/2);
 		double limitY = (this.height/2);

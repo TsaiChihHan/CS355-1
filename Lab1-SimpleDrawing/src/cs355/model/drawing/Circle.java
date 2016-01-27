@@ -1,6 +1,7 @@
 package cs355.model.drawing;
 
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
@@ -68,9 +69,13 @@ public class Circle extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
-		double run = pt.getX()-this.center.getX();
-		double rise = pt.getY()-this.center.getY();
-		double distance = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
-		return ((radius+tolerance)<=distance);
+		AffineTransform worldToObj = new AffineTransform();
+		worldToObj.rotate(-rotation);
+		worldToObj.translate(-center.getX(),-center.getY());
+		worldToObj.transform(pt, pt); //transform pt to object coordinates
+		
+		double distance = Math.sqrt(Math.pow(pt.getX(), 2) + Math.pow(pt.getY(), 2));
+		
+		return (radius<=distance);
 	}
 }
