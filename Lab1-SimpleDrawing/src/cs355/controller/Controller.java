@@ -46,7 +46,6 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-		GUIFunctions.printf("X:%d, Y:%d",e.getX(),e.getY());
 		if(currentMode.equals(mode.SHAPE))
 		{
 			if(Drawing.instance().getCurrentShape().equals(Shape.type.TRIANGLE))
@@ -103,9 +102,15 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 					break;
 			}
 		}
-		else if(currentMode.equals(mode.SELECT))
+		else if(currentMode.equals(mode.SELECT) && currentShapeIndex != -1)
 		{
-			
+			int x = e.getX();
+			int y = e.getY();
+			Point2D.Double point = new Point2D.Double((double)x, (double)y);
+			if(Drawing.instance().mousePressedInSelectedShape(point, 4))
+			{
+				mouseDragStart = point;
+			}
 		}
 	}
 
@@ -132,6 +137,10 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 				}
 			}
 		}
+		else if(currentMode.equals(mode.SELECT) && currentShapeIndex != -1)
+		{
+			this.mouseDragStart=null;
+		}
 	}
 
 	@Override
@@ -149,9 +158,14 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		if (this.currentShapeIndex != -1) //if we are currently manipulating a shape
+		if (currentMode.equals(mode.SHAPE) && this.currentShapeIndex != -1) //if we are currently manipulating a shape
 		{
 			Drawing.instance().updateShape(this.currentShapeIndex, this.mouseDragStart, e);	
+		}
+		else if(currentMode.equals(mode.SELECT) && currentShapeIndex != -1 && mouseDragStart != null) //shape selected and being moved
+		{
+			Drawing.instance().moveShape(this.currentShapeIndex, this.mouseDragStart, e);
+			this.mouseDragStart = new Point2D.Double((double)e.getX(), (double)e.getY());
 		}
 	}
 
@@ -351,6 +365,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		if(this.currentShapeIndex != -1)
 		{
 			Drawing.instance().moveForward(this.currentShapeIndex);
+			this.currentShapeIndex = Drawing.instance().getCurrentShapeIndex();
 		}
 	}
 
@@ -360,6 +375,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		if(this.currentShapeIndex != -1)
 		{
 			Drawing.instance().moveBackward(this.currentShapeIndex);
+			this.currentShapeIndex = Drawing.instance().getCurrentShapeIndex();
 		}
 	}
 
@@ -369,6 +385,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		if(this.currentShapeIndex != -1)
 		{
 			Drawing.instance().moveToFront(this.currentShapeIndex);
+			this.currentShapeIndex = Drawing.instance().getCurrentShapeIndex();
 		}
 	}
 
@@ -378,6 +395,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		if(this.currentShapeIndex != -1)
 		{
 			Drawing.instance().movetoBack(this.currentShapeIndex);
+			this.currentShapeIndex = Drawing.instance().getCurrentShapeIndex();
 		}
 	}
 

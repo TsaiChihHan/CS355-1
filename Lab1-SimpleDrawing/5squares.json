@@ -1,0 +1,72 @@
+[
+  {
+    "size": 100.0,
+    "color": {
+      "value": -1,
+      "falpha": 0.0
+    },
+    "center": {
+      "x": 100.0,
+      "y": 100.0
+    },
+    "rotation": 0.0,
+    "shapeType": "SQUARE",
+    "SHAPE_TYPE": "cs355.model.drawing.Square"
+  },
+  {
+    "size": 100.0,
+    "color": {
+      "value": -16776961,
+      "falpha": 0.0
+    },
+    "center": {
+      "x": 110.0,
+      "y": 110.0
+    },
+    "rotation": 0.0,
+    "shapeType": "SQUARE",
+    "SHAPE_TYPE": "cs355.model.drawing.Square"
+  },
+  {
+    "size": 100.0,
+    "color": {
+      "value": -65536,
+      "falpha": 0.0
+    },
+    "center": {
+      "x": 120.0,
+      "y": 120.0
+    },
+    "rotation": 0.0,
+    "shapeType": "SQUARE",
+    "SHAPE_TYPE": "cs355.model.drawing.Square"
+  },
+  {
+    "size": 100.0,
+    "color": {
+      "value": -256,
+      "falpha": 0.0
+    },
+    "center": {
+      "x": 130.0,
+      "y": 130.0
+    },
+    "rotation": 0.0,
+    "shapeType": "SQUARE",
+    "SHAPE_TYPE": "cs355.model.drawing.Square"
+  },
+  {
+    "size": 100.0,
+    "color": {
+      "value": -16711936,
+      "falpha": 0.0
+    },
+    "center": {
+      "x": 140.0,
+      "y": 140.0
+    },
+    "rotation": 0.0,
+    "shapeType": "SQUARE",
+    "SHAPE_TYPE": "cs355.model.drawing.Square"
+  }
+]

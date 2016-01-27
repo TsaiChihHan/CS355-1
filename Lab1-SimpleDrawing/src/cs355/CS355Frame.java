@@ -1215,7 +1215,6 @@ class CS355Frame extends javax.swing.JFrame implements KeyListener, MouseListene
 		} catch (InterruptedException ex) {
 			Logger.getLogger(CS355Frame.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		System.out.println("c: " + c);
 
 		// Color the CS355SmallCanvas (color indicator).
 		Graphics2D toDrawOn = (Graphics2D) colorCanvas.getGraphics();

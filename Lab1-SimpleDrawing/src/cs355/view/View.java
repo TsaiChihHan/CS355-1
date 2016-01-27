@@ -1,5 +1,6 @@
 package cs355.view;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
@@ -24,39 +25,73 @@ public class View implements ViewRefresher {
 	@Override
 	public void refreshView(Graphics2D g2d)
 	{
+		GUIFunctions.changeSelectedColor(Drawing.instance().getCurrentColor());
 		ArrayList<Shape> shapes = (ArrayList<Shape>) Drawing.instance().getShapes();
 		int selectedShapeIndex = Drawing.instance().getCurrentShapeIndex();
 		
 		for (int i=0;i<shapes.size();i++) 
 		{
 			Shape shape = shapes.get(i);
+			
 			g2d.setColor(shape.getColor()); //set color of shape we are going to draw
 			AffineTransform objToWorld = new AffineTransform();
 			objToWorld.translate(shape.getCenter().getX(),shape.getCenter().getY());
-			// rotate to its orientation (first transformation)
 			objToWorld.rotate(shape.getRotation());
-			// set the drawing transformation
 			g2d.setTransform(objToWorld);
-			// and finally draw
+			
 			switch (shape.getShapeType()) 
 			{
 				case LINE:
-					this.drawLine(g2d, (Line)shape, selectedShapeIndex==i);
+					this.drawLine(g2d, (Line)shape, false);
 					break;
 				case ELLIPSE:
-					this.drawEllipse(g2d, (Ellipse)shape, selectedShapeIndex==i);
+					this.drawEllipse(g2d, (Ellipse)shape, false);
 					break;
 				case RECTANGLE:
-					this.drawRectangle(g2d, (Rectangle)shape, selectedShapeIndex==i);
+					this.drawRectangle(g2d, (Rectangle)shape, false);
 					break;
 				case CIRCLE:
-					this.drawCircle(g2d, (Circle)shape, selectedShapeIndex==i);
+					this.drawCircle(g2d, (Circle)shape, false);
 					break;
 				case SQUARE:
-					this.drawSquare(g2d, (Square)shape, selectedShapeIndex==i);
+					this.drawSquare(g2d, (Square)shape, false);
 					break;
 				case TRIANGLE:
-					this.drawTriangle(g2d, (Triangle)shape, selectedShapeIndex==i);
+					this.drawTriangle(g2d, (Triangle)shape, false);
+					break;
+				default:
+					break;
+			}
+		}
+		if(selectedShapeIndex != -1)
+		{
+			Shape shape = shapes.get(selectedShapeIndex);
+			
+			g2d.setColor(Color.red);
+			AffineTransform objToWorld = new AffineTransform();
+			objToWorld.translate(shape.getCenter().getX(),shape.getCenter().getY());
+			objToWorld.rotate(shape.getRotation());
+			g2d.setTransform(objToWorld);
+			
+			switch (shape.getShapeType()) 
+			{
+				case LINE:
+					this.drawLine(g2d, (Line)shape, true);
+					break;
+				case ELLIPSE:
+					this.drawEllipse(g2d, (Ellipse)shape, true);
+					break;
+				case RECTANGLE:
+					this.drawRectangle(g2d, (Rectangle)shape, true);
+					break;
+				case CIRCLE:
+					this.drawCircle(g2d, (Circle)shape, true);
+					break;
+				case SQUARE:
+					this.drawSquare(g2d, (Square)shape, true);
+					break;
+				case TRIANGLE:
+					this.drawTriangle(g2d, (Triangle)shape, true);
 					break;
 				default:
 					break;
@@ -64,24 +99,40 @@ public class View implements ViewRefresher {
 		}
 	}
 	
-	private void drawCircle(Graphics2D g2d, Circle c, boolean isSelected) 
+	private void drawCircle(Graphics2D g2d, Circle c, boolean selected) 
 	{
 		double radius = c.getRadius();
 		int width = (int) (2*radius);
 		int height = width;
 		
-		g2d.fillOval(-width/2, -height/2, width, height);
+		if(selected)
+		{
+			g2d.drawRect(-width/2,-height/2,width,height);
+			//TODO draw drag handle
+		}
+		else
+		{
+			g2d.fillOval(-width/2, -height/2, width, height);
+		}
 	}
 
-	private void drawEllipse(Graphics2D g2d, Ellipse e, boolean isSelected) 
+	private void drawEllipse(Graphics2D g2d, Ellipse e, boolean selected) 
 	{
 		int height = (int)e.getHeight();
 		int width = (int)e.getWidth();
 		
-		g2d.fillOval(-width/2, -height/2, width, height);
+		if(selected)
+		{
+			g2d.drawRect(-width/2,-height/2,width,height);
+			//TODO draw drag handle
+		}
+		else
+		{
+			g2d.fillOval(-width/2, -height/2, width, height);
+		}
 	}
 	
-	private void drawLine(Graphics2D g2d, Line l, boolean isSelected) 
+	private void drawLine(Graphics2D g2d, Line l, boolean selected) 
 	{
 		int x1 = (int)l.getCenter().getX();
 		int y1 = (int)l.getCenter().getY();
@@ -91,23 +142,39 @@ public class View implements ViewRefresher {
 		g2d.drawLine(0, 0, x2-x1, y2-y1);
 	}
 	
-	private void drawRectangle(Graphics2D g2d, Rectangle r, boolean isSelected) 
+	private void drawRectangle(Graphics2D g2d, Rectangle r, boolean selected) 
 	{
 		int width = (int) r.getWidth();
 		int height = (int) r.getHeight();
 		
-		g2d.fillRect(-width/2,-height/2,width,height);
+		if(selected)
+		{
+			g2d.drawRect(-width/2,-height/2,width,height);
+			//TODO draw drag handle
+		}
+		else
+		{
+			g2d.fillRect(-width/2,-height/2,width,height);
+		}
 	}
 	
-	private void drawSquare(Graphics2D g2d, Square s, boolean isSelected) 
+	private void drawSquare(Graphics2D g2d, Square s, boolean selected) 
 	{
 		int width = (int) s.getSize();
 		int height = width;
 		
-		g2d.fillRect(-width/2,-height/2,width,height);
+		if(selected)
+		{
+			g2d.drawRect(-width/2,-height/2,width,height);
+			//TODO draw drag handle
+		}
+		else
+		{
+			g2d.fillRect(-width/2,-height/2,width,height);
+		}
 	}
 	
-	private void drawTriangle(Graphics2D g2d, Triangle t, boolean isSelected) 
+	private void drawTriangle(Graphics2D g2d, Triangle t, boolean selected) 
 	{
 		int xa = (int)(t.getA().getX()-t.getCenter().getX());
 		int xb = (int)(t.getB().getX()-t.getCenter().getX());
@@ -120,6 +187,14 @@ public class View implements ViewRefresher {
 		int xCoordinates[] = {xa, xb, xc};
 		int yCoordinates[] = {ya, yb, yc};
 		
-		g2d.fillPolygon(xCoordinates, yCoordinates, 3);
+		if(selected)
+		{
+			g2d.drawPolygon(xCoordinates, yCoordinates, 3);
+			//TODO draw drag handle
+		}
+		else
+		{
+			g2d.fillPolygon(xCoordinates, yCoordinates, 3);
+		}
 	}
 }

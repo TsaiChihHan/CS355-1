@@ -76,6 +76,6 @@ public class Circle extends Shape {
 		
 		double distance = Math.sqrt(Math.pow(pt.getX(), 2) + Math.pow(pt.getY(), 2));
 		
-		return (radius<=distance);
+		return (radius>=distance);
 	}
 }

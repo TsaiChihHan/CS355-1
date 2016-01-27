@@ -1,6 +1,9 @@
 [
   {
-    "size": 100.0,
+    "end": {
+      "x": 300.0,
+      "y": 100.0
+    },
     "color": {
       "value": -1,
       "falpha": 0.0
@@ -10,7 +13,7 @@
       "y": 100.0
     },
     "rotation": 0.0,
-    "shapeType": "SQUARE",
-    "SHAPE_TYPE": "cs355.model.drawing.Square"
+    "shapeType": "LINE",
+    "SHAPE_TYPE": "cs355.model.drawing.Line"
   }
 ]

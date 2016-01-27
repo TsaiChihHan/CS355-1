@@ -6,6 +6,7 @@ import java.util.List;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 public class Drawing extends CS355Drawing {
 	
@@ -36,9 +37,11 @@ public class Drawing extends CS355Drawing {
 		for(int i=shapes.size()-1;i>=0;i--)
 		{
 			Shape shape = shapes.get(i);
-			if(shape.pointInShape(point, tolerance))
+			Point2D.Double pointCopy = (Double) point.clone();
+			if(shape.pointInShape(pointCopy, tolerance))
 			{
 				currentShapeIndex = i;
+				this.setCurrentColor(shape.getColor());
 				updateView();
 				return i;
 			}
@@ -46,6 +49,70 @@ public class Drawing extends CS355Drawing {
 		currentShapeIndex = -1;
 		updateView();
 		return currentShapeIndex;
+	}
+	
+	//checks if a mouse press occurred in the same boundaries of the selected shape
+	public boolean mousePressedInSelectedShape(Point2D.Double point, double tolerance)
+	{
+		for(int i=shapes.size()-1;i>=0;i--)
+		{
+			Shape shape = shapes.get(i);
+			Point2D.Double pointCopy = (Double) point.clone();
+			if(shape.pointInShape(pointCopy, tolerance))
+			{
+				return (i == currentShapeIndex);
+			}
+		}
+		return false;
+	}
+	
+	public void moveShape(int index, Double mouseDragStart, MouseEvent e)
+	{ 
+		Shape shape = shapes.get(index);
+		
+		double xDiff = e.getX()-mouseDragStart.getX();
+		double yDiff = e.getY()-mouseDragStart.getY();
+		double x = shape.getCenter().getX() + xDiff;
+		double y = shape.getCenter().getY() + yDiff;
+		Point2D.Double updatedCenter = new Point2D.Double((double)x, (double)y);
+		
+		if(shape.getShapeType().equals(Shape.type.LINE))
+		{
+			Line l = (Line) shape;
+			double x2 = l.getEnd().getX() + xDiff;
+			double y2 = l.getEnd().getY() + yDiff;
+			Point2D.Double updatedEnd = new Point2D.Double((double)x2, (double)y2);
+			l.setEnd(updatedEnd);
+		}
+		if(shape.getShapeType().equals(Shape.type.TRIANGLE))
+		{
+			Triangle t = (Triangle) shape;
+			
+			double xa = t.getA().getX() + xDiff;
+			double xb = t.getB().getX() + xDiff;
+			double xc = t.getC().getX() + xDiff;
+			double ya = t.getA().getY() + yDiff;
+			double yb = t.getB().getY() + yDiff;
+			double yc = t.getC().getY() + yDiff;
+			
+			Point2D.Double updatedA = new Point2D.Double((double)xa, (double)ya);
+			Point2D.Double updatedB = new Point2D.Double((double)xb, (double)yb);
+			Point2D.Double updatedC = new Point2D.Double((double)xc, (double)yc);
+			
+			t.setA(updatedA);
+			t.setB(updatedB);
+			t.setC(updatedC);
+			
+			double centerX = (t.getA().getX() + t.getB().getX() + t.getC().getX())/3;
+			double centerY = (t.getA().getY() + t.getB().getY() + t.getC().getY())/3;
+			
+			updatedCenter.x = centerX;
+			updatedCenter.y = centerY;
+		}
+		
+		shape.setCenter(updatedCenter);
+		
+		updateView();
 	}
 	
 	//Updates shape as user modifies it
@@ -182,6 +249,7 @@ public class Drawing extends CS355Drawing {
 	public void deleteShape(int index)
 	{
 		shapes.remove(index);
+		currentShapeIndex = -1;
 		updateView();
 	}
 	
@@ -193,7 +261,8 @@ public class Drawing extends CS355Drawing {
 		
 		Shape s = shapes.get(index);
 		shapes.remove(index);
-		shapes.add(s);
+		currentShapeIndex = addShape(s);
+		updateView();
 	}
 
 	@Override
@@ -204,18 +273,22 @@ public class Drawing extends CS355Drawing {
 		
 		Shape s = shapes.get(index);
 		shapes.remove(index);
-		shapes.add(0, s);	
+		shapes.add(0, s);
+		currentShapeIndex = 0;
+		updateView();
 	}
 
 	@Override
 	public void moveForward(int index)
 	{
-		if(shapes.size() <= index)
+		if(shapes.size()-1 <= index)
 			return;
 		
 		Shape s = shapes.get(index);
 		shapes.remove(index);
-		shapes.add(s);
+		shapes.add(index+1, s);
+		currentShapeIndex = index+1;
+		updateView();
 	}
 
 	@Override
@@ -227,6 +300,8 @@ public class Drawing extends CS355Drawing {
 		Shape s = shapes.get(index);
 		shapes.remove(index);
 		shapes.add(index-1, s);
+		currentShapeIndex = index-1;
+		updateView();
 	}
 
 	@Override
@@ -280,5 +355,4 @@ public class Drawing extends CS355Drawing {
 		this.currentShapeIndex = currentShapeIndex;
 		updateView();
 	}
-
 }
