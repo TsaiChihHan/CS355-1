@@ -1,6 +1,7 @@
 package cs355.model.drawing;
 
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
@@ -48,7 +49,15 @@ public class Square extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		AffineTransform worldToObj = new AffineTransform();
+		worldToObj.rotate(-rotation);
+		worldToObj.translate(-center.getX(),-center.getX());
+		worldToObj.transform(pt, pt);
+		
+		double limit = (this.size/2);
+		double px = pt.getX();
+		double py = pt.getY();
+		
+		return ((-limit<=px && px<=limit) && (-limit<=py && py<=limit));
 	}
 }

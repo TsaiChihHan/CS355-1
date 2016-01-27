@@ -13,6 +13,7 @@ public class Drawing extends CS355Drawing {
 	
 	private List<Shape> shapes;
 	private Shape.type currentShape;
+	private int currentShapeIndex;
 	private Color currentColor;
 
 	public static Drawing instance()
@@ -27,6 +28,24 @@ public class Drawing extends CS355Drawing {
 		shapes = new ArrayList<Shape>();
 		currentShape = null;
 		currentColor = Color.WHITE;
+		currentShapeIndex = -1;
+	}
+	
+	public int selectShape(Point2D.Double point, double tolerance)
+	{
+		for(int i=shapes.size()-1;i>=0;i--)
+		{
+			Shape shape = shapes.get(i);
+			if(shape.pointInShape(point, tolerance))
+			{
+				currentShapeIndex = i;
+				updateView();
+				return i;
+			}
+		}
+		currentShapeIndex = -1;
+		updateView();
+		return currentShapeIndex;
 	}
 	
 	//Updates shape as user modifies it
@@ -248,6 +267,18 @@ public class Drawing extends CS355Drawing {
 	public void setCurrentColor(Color currentColor)
 	{
 		this.currentColor = currentColor;
+		updateView();
+	}
+
+	public int getCurrentShapeIndex()
+	{
+		return currentShapeIndex;
+	}
+
+	public void setCurrentShapeIndex(int currentShapeIndex)
+	{
+		this.currentShapeIndex = currentShapeIndex;
+		updateView();
 	}
 
 }

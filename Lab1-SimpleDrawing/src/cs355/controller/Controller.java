@@ -20,6 +20,11 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	private ArrayList<Point2D.Double> trianglePoints;
 	private int currentShapeIndex;
 	private Point2D.Double mouseDragStart;
+	private mode currentMode = mode.NONE;
+	
+	public enum mode {
+		SHAPE, SELECT, ZOOM_IN, ZOOM_OUT, NONE
+	}
 
 	public Controller()
 	{
@@ -28,75 +33,103 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		currentShapeIndex = -1;
 		mouseDragStart = null;
 	}
+	
+	public void switchStates(mode m)
+	{
+		this.trianglePoints.clear();
+		this.currentMode = m;
+		Drawing.instance().setCurrentShapeIndex(-1);
+		currentShapeIndex = -1;
+		mouseDragStart = null;
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-		if(Drawing.instance().getCurrentShape().equals(Shape.type.TRIANGLE))
+		GUIFunctions.printf("X:%d, Y:%d",e.getX(),e.getY());
+		if(currentMode.equals(mode.SHAPE))
 		{
-			this.trianglePoints.add(new Point2D.Double(e.getX(), e.getY()));
-			if (this.trianglePoints.size() == 3) //user placed final point needed to draw triangle
+			if(Drawing.instance().getCurrentShape().equals(Shape.type.TRIANGLE))
 			{
-				double centerX = (trianglePoints.get(0).getX() + trianglePoints.get(1).getX() + trianglePoints.get(2).getX())/3;
-				double centerY = (trianglePoints.get(0).getY() + trianglePoints.get(1).getY() + trianglePoints.get(2).getY())/3;
-				
-				Drawing.instance().addShape(new Triangle(Drawing.instance().getCurrentColor(), new Point2D.Double(centerX,centerY), trianglePoints.get(0), trianglePoints.get(1), trianglePoints.get(2)));
-				trianglePoints.clear();
+				this.trianglePoints.add(new Point2D.Double(e.getX(), e.getY()));
+				if (this.trianglePoints.size() == 3) //user placed final point needed to draw triangle
+				{
+					double centerX = (trianglePoints.get(0).getX() + trianglePoints.get(1).getX() + trianglePoints.get(2).getX())/3;
+					double centerY = (trianglePoints.get(0).getY() + trianglePoints.get(1).getY() + trianglePoints.get(2).getY())/3;
+					
+					Drawing.instance().addShape(new Triangle(Drawing.instance().getCurrentColor(), new Point2D.Double(centerX,centerY), trianglePoints.get(0), trianglePoints.get(1), trianglePoints.get(2)));
+					trianglePoints.clear();
+				}
 			}
 		}
+		else if(currentMode.equals(mode.SELECT))
+		{
+			this.currentShapeIndex = Drawing.instance().selectShape(new Point2D.Double(e.getX(),e.getY()), 5);
+		}
+		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		int x = e.getX();
-		int y = e.getY();
-		Point2D.Double point = new Point2D.Double((double)x, (double)y);
-		switch (Drawing.instance().getCurrentShape()) 
+		if(currentMode.equals(mode.SHAPE))
 		{
-			case CIRCLE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
-				this.currentShapeIndex = Drawing.instance().addShape(new Circle(Drawing.instance().getCurrentColor(), point, 0));
-				break;
-			case ELLIPSE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
-				this.currentShapeIndex = Drawing.instance().addShape(new Ellipse(Drawing.instance().getCurrentColor(), point, 0, 0));
-				break;
-			case LINE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
-				this.currentShapeIndex = Drawing.instance().addShape(new Line(Drawing.instance().getCurrentColor(), point, point));
-				break;
-			case RECTANGLE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
-				this.currentShapeIndex = Drawing.instance().addShape(new Rectangle(Drawing.instance().getCurrentColor(), point, 0, 0));
-				break;
-			case SQUARE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
-				this.currentShapeIndex = Drawing.instance().addShape(new Square(Drawing.instance().getCurrentColor(), point, 0));
-				break;
-			default:
-				break;
+			int x = e.getX();
+			int y = e.getY();
+			Point2D.Double point = new Point2D.Double((double)x, (double)y);
+			switch (Drawing.instance().getCurrentShape()) 
+			{
+				case CIRCLE:
+					this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+					this.currentShapeIndex = Drawing.instance().addShape(new Circle(Drawing.instance().getCurrentColor(), point, 0));
+					break;
+				case ELLIPSE:
+					this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+					this.currentShapeIndex = Drawing.instance().addShape(new Ellipse(Drawing.instance().getCurrentColor(), point, 0, 0));
+					break;
+				case LINE:
+					this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+					this.currentShapeIndex = Drawing.instance().addShape(new Line(Drawing.instance().getCurrentColor(), point, point));
+					break;
+				case RECTANGLE:
+					this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+					this.currentShapeIndex = Drawing.instance().addShape(new Rectangle(Drawing.instance().getCurrentColor(), point, 0, 0));
+					break;
+				case SQUARE:
+					this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+					this.currentShapeIndex = Drawing.instance().addShape(new Square(Drawing.instance().getCurrentColor(), point, 0));
+					break;
+				default:
+					break;
+			}
+		}
+		else if(currentMode.equals(mode.SELECT))
+		{
+			
 		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e)
 	{
-		Shape.type currentShape = Drawing.instance().getCurrentShape();
-		if (currentShape != null && this.currentShapeIndex!=-1) 
-		{	
-			switch (currentShape) 
-			{
-				case CIRCLE:
-				case ELLIPSE:
-				case LINE:
-				case RECTANGLE:
-				case SQUARE:
-					this.currentShapeIndex=-1;
-					this.mouseDragStart=null;
-					break; //if we were manipulating  any of the above shapes, releasing mouse signals we are finished
-				default:
-					break;
+		if(currentMode.equals(mode.SHAPE))
+		{
+			Shape.type currentShape = Drawing.instance().getCurrentShape();
+			if (currentShape != null && this.currentShapeIndex!=-1) 
+			{	
+				switch (currentShape) 
+				{
+					case CIRCLE:
+					case ELLIPSE:
+					case LINE:
+					case RECTANGLE:
+					case SQUARE:
+						this.currentShapeIndex=-1;
+						this.mouseDragStart=null;
+						break; //if we were manipulating  any of the above shapes, releasing mouse signals we are finished
+					default:
+						break;
+				}
 			}
 		}
 	}
@@ -140,60 +173,63 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public void lineButtonHit()
 	{
 		Drawing.instance().setCurrentShape(Shape.type.LINE);
-		trianglePoints.clear();
+		switchStates(mode.SHAPE);
 	}
 
 	@Override
 	public void squareButtonHit()
 	{
 		Drawing.instance().setCurrentShape(Shape.type.SQUARE);
-		trianglePoints.clear();
+		switchStates(mode.SHAPE);
 	}
 
 	@Override
 	public void rectangleButtonHit()
 	{
 		Drawing.instance().setCurrentShape(Shape.type.RECTANGLE);
-		trianglePoints.clear();
+		switchStates(mode.SHAPE);
 	}
 
 	@Override
 	public void circleButtonHit()
 	{
 		Drawing.instance().setCurrentShape(Shape.type.CIRCLE);
-		trianglePoints.clear();
+		switchStates(mode.SHAPE);
 	}
 
 	@Override
 	public void ellipseButtonHit()
 	{
 		Drawing.instance().setCurrentShape(Shape.type.ELLIPSE);
-		trianglePoints.clear();
+		switchStates(mode.SHAPE);
 	}
 
 	@Override
 	public void triangleButtonHit()
 	{
 		Drawing.instance().setCurrentShape(Shape.type.TRIANGLE);
-		trianglePoints.clear();
+		switchStates(mode.SHAPE);
 	}
 
 	@Override
 	public void selectButtonHit()
 	{
-		// TODO Auto-generated method stub
+		trianglePoints.clear();
+		switchStates(mode.SELECT);
 	}
 
 	@Override
 	public void zoomInButtonHit()
 	{
-		// TODO Auto-generated method stub
+		trianglePoints.clear();
+		switchStates(mode.ZOOM_IN);
 	}
 
 	@Override
 	public void zoomOutButtonHit()
 	{
-		// TODO Auto-generated method stub
+		trianglePoints.clear();
+		switchStates(mode.ZOOM_OUT);
 	}
 
 	@Override
@@ -260,7 +296,11 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void doDeleteShape()
 	{
-		// TODO Auto-generated method stub
+		if(this.currentShapeIndex != -1)
+		{
+			Drawing.instance().deleteShape(this.currentShapeIndex);
+			this.currentShapeIndex = -1;
+		}
 	}
 
 	@Override
@@ -308,30 +348,52 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void doMoveForward()
 	{
-		// TODO Auto-generated method stub
+		if(this.currentShapeIndex != -1)
+		{
+			Drawing.instance().moveForward(this.currentShapeIndex);
+		}
 	}
 
 	@Override
 	public void doMoveBackward()
 	{
-		// TODO Auto-generated method stub
+		if(this.currentShapeIndex != -1)
+		{
+			Drawing.instance().moveBackward(this.currentShapeIndex);
+		}
 	}
 
 	@Override
 	public void doSendToFront()
 	{
-		// TODO Auto-generated method stub
+		if(this.currentShapeIndex != -1)
+		{
+			Drawing.instance().moveToFront(this.currentShapeIndex);
+		}
 	}
 
 	@Override
 	public void doSendtoBack()
 	{
-		// TODO Auto-generated method stub
+		if(this.currentShapeIndex != -1)
+		{
+			Drawing.instance().movetoBack(this.currentShapeIndex);
+		}
 	}
 
 	public ViewRefresher getView()
 	{
 		return view;
+	}
+
+	public mode getCurrentMode()
+	{
+		return currentMode;
+	}
+
+	public void setCurrentMode(mode currentMode)
+	{
+		this.currentMode = currentMode;
 	}
 
 }

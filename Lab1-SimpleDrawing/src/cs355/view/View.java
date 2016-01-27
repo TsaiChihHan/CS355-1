@@ -1,6 +1,7 @@
 package cs355.view;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -24,28 +25,38 @@ public class View implements ViewRefresher {
 	public void refreshView(Graphics2D g2d)
 	{
 		ArrayList<Shape> shapes = (ArrayList<Shape>) Drawing.instance().getShapes();
-		for (Shape shape : shapes) 
+		int selectedShapeIndex = Drawing.instance().getCurrentShapeIndex();
+		
+		for (int i=0;i<shapes.size();i++) 
 		{
+			Shape shape = shapes.get(i);
 			g2d.setColor(shape.getColor()); //set color of shape we are going to draw
+			AffineTransform objToWorld = new AffineTransform();
+			objToWorld.translate(shape.getCenter().getX(),shape.getCenter().getY());
+			// rotate to its orientation (first transformation)
+			objToWorld.rotate(shape.getRotation());
+			// set the drawing transformation
+			g2d.setTransform(objToWorld);
+			// and finally draw
 			switch (shape.getShapeType()) 
 			{
 				case LINE:
-					this.drawLine(g2d, (Line)shape);
+					this.drawLine(g2d, (Line)shape, selectedShapeIndex==i);
 					break;
 				case ELLIPSE:
-					this.drawEllipse(g2d, (Ellipse)shape);
+					this.drawEllipse(g2d, (Ellipse)shape, selectedShapeIndex==i);
 					break;
 				case RECTANGLE:
-					this.drawRectangle(g2d, (Rectangle)shape);
+					this.drawRectangle(g2d, (Rectangle)shape, selectedShapeIndex==i);
 					break;
 				case CIRCLE:
-					this.drawCircle(g2d, (Circle)shape);
+					this.drawCircle(g2d, (Circle)shape, selectedShapeIndex==i);
 					break;
 				case SQUARE:
-					this.drawSquare(g2d, (Square)shape);
+					this.drawSquare(g2d, (Square)shape, selectedShapeIndex==i);
 					break;
 				case TRIANGLE:
-					this.drawTriangle(g2d, (Triangle)shape);
+					this.drawTriangle(g2d, (Triangle)shape, selectedShapeIndex==i);
 					break;
 				default:
 					break;
@@ -53,61 +64,61 @@ public class View implements ViewRefresher {
 		}
 	}
 	
-	private void drawCircle(Graphics2D g2d, Circle c) 
+	private void drawCircle(Graphics2D g2d, Circle c, boolean isSelected) 
 	{
 		double radius = c.getRadius();
-		int x = (int) (c.getCenter().getX() - radius);
-		int y = (int) (c.getCenter().getY() - radius);
 		int width = (int) (2*radius);
 		int height = width;
 		
-		g2d.fillOval(x, y, width, height);
+		g2d.fillOval(-width/2, -height/2, width, height);
 	}
 
-	private void drawEllipse(Graphics2D g2d, Ellipse e) 
+	private void drawEllipse(Graphics2D g2d, Ellipse e, boolean isSelected) 
 	{
 		int height = (int)e.getHeight();
 		int width = (int)e.getWidth();
-		int x = (int) (e.getCenter().getX() - (width / 2));
-		int y = (int) (e.getCenter().getY() - (height / 2));
 		
-		g2d.fillOval(x, y, width, height);
+		g2d.fillOval(-width/2, -height/2, width, height);
 	}
 	
-	private void drawLine(Graphics2D g2d, Line l) 
+	private void drawLine(Graphics2D g2d, Line l, boolean isSelected) 
 	{
 		int x1 = (int)l.getCenter().getX();
 		int y1 = (int)l.getCenter().getY();
 		int x2 = (int)l.getEnd().getX();
 		int y2 = (int)l.getEnd().getY();
 		
-		g2d.drawLine(x1, y1, x2, y2);
+		g2d.drawLine(0, 0, x2-x1, y2-y1);
 	}
 	
-	private void drawRectangle(Graphics2D g2d, Rectangle r) 
+	private void drawRectangle(Graphics2D g2d, Rectangle r, boolean isSelected) 
 	{
-		int x = (int) (r.getCenter().getX()-(r.getWidth()/2));
-		int y = (int) (r.getCenter().getY()-(r.getHeight()/2));
 		int width = (int) r.getWidth();
 		int height = (int) r.getHeight();
 		
-		g2d.fillRect(x, y, width, height);
+		g2d.fillRect(-width/2,-height/2,width,height);
 	}
 	
-	private void drawSquare(Graphics2D g2d, Square s) 
+	private void drawSquare(Graphics2D g2d, Square s, boolean isSelected) 
 	{
-		int x = (int) (s.getCenter().getX()-(s.getSize()/2));
-		int y = (int) (s.getCenter().getY()-(s.getSize()/2));
 		int width = (int) s.getSize();
 		int height = width;
 		
-		g2d.fillRect(x, y, width, height);
+		g2d.fillRect(-width/2,-height/2,width,height);
 	}
 	
-	private void drawTriangle(Graphics2D g2d, Triangle t) 
+	private void drawTriangle(Graphics2D g2d, Triangle t, boolean isSelected) 
 	{
-		int xCoordinates[] = {(int)t.getA().getX(), (int)t.getB().getX(), (int)t.getC().getX()};
-		int yCoordinates[] = {(int)t.getA().getY(), (int)t.getB().getY(), (int)t.getC().getY()};
+		int xa = (int)(t.getA().getX()-t.getCenter().getX());
+		int xb = (int)(t.getB().getX()-t.getCenter().getX());
+		int xc = (int)(t.getC().getX()-t.getCenter().getX());
+		
+		int ya = (int)(t.getA().getY()-t.getCenter().getY());
+		int yb = (int)(t.getB().getY()-t.getCenter().getY());
+		int yc = (int)(t.getC().getY()-t.getCenter().getY());
+		
+		int xCoordinates[] = {xa, xb, xc};
+		int yCoordinates[] = {ya, yb, yc};
 		
 		g2d.fillPolygon(xCoordinates, yCoordinates, 3);
 	}

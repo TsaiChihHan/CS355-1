@@ -68,7 +68,9 @@ public class Circle extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		double run = pt.getX()-this.center.getX();
+		double rise = pt.getY()-this.center.getY();
+		double distance = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
+		return ((radius+tolerance)<=distance);
 	}
 }

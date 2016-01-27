@@ -71,7 +71,13 @@ public class Ellipse extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		double cx = center.getX();
+		double cy = center.getY();
+		double px = pt.getX();
+		double py = pt.getY();
+		double rx = width/2 + tolerance;
+		double ry = height/2 + tolerance;
+		
+		return (Math.pow((px-cx), 2) / Math.pow(rx, 2)) + (Math.pow((py-cy), 2) / Math.pow(ry, 2)) <= 1;
 	}
 }
