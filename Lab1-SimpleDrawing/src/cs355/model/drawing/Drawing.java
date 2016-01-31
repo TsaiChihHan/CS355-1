@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
@@ -54,16 +55,88 @@ public class Drawing extends CS355Drawing {
 	//checks if a mouse press occurred in the same boundaries of the selected shape
 	public boolean mousePressedInSelectedShape(Point2D.Double point, double tolerance)
 	{
-		for(int i=shapes.size()-1;i>=0;i--)
+		Shape shape = shapes.get(currentShapeIndex);
+		Point2D.Double pointCopy = (Double) point.clone();
+		return shape.pointInShape(pointCopy, tolerance);
+	}
+	
+	public boolean mousePressedInRotationHandle(Point2D.Double point, double tolerance)
+	{
+		Shape shape = shapes.get(currentShapeIndex);
+		//g2d.drawOval(-6, -height/2 - 15, 11, 11);
+		double height = -1;
+		switch(shape.getShapeType())
 		{
-			Shape shape = shapes.get(i);
+			case ELLIPSE:
+				height = ((Ellipse)shape).getHeight();
+				break;
+			case RECTANGLE:
+				height = ((Rectangle)shape).getHeight();
+				break;
+			case CIRCLE:
+				height = 2*((Circle)shape).getRadius();
+				break;
+			case SQUARE:
+				height = ((Square)shape).getSize();
+				break;
+			default:
+				break;
+		}
+		if(height!=-1)
+		{
 			Point2D.Double pointCopy = (Double) point.clone();
-			if(shape.pointInShape(pointCopy, tolerance))
+			AffineTransform worldToObj = new AffineTransform();
+			worldToObj.rotate(-shape.getRotation());
+			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
+			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+			double yDiff = pointCopy.getY()+((height/2) + 9);
+			
+			double distance = Math.sqrt(Math.pow(pointCopy.getX(), 2) + Math.pow(yDiff, 2));
+			return (6>=distance);
+		}
+		if(shape.getShapeType().equals(Shape.type.TRIANGLE))
+		{
+			Point2D.Double pointCopy = (Double) point.clone();
+			AffineTransform worldToObj = new AffineTransform();
+			worldToObj.rotate(-shape.getRotation());
+			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
+			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+			
+			Triangle t = (Triangle)shape;
+			double xa = t.getA().getX()-t.getCenter().getX();
+			double xb = t.getB().getX()-t.getCenter().getX();
+			double xc = t.getC().getX()-t.getCenter().getX();
+			
+			double ya = t.getA().getY()-t.getCenter().getY();
+			double yb = t.getB().getY()-t.getCenter().getY();
+			double yc = t.getC().getY()-t.getCenter().getY();
+			
+			double distance = 7;
+			if(ya <= yb && ya <= yc)
 			{
-				return (i == currentShapeIndex);
+				distance = Math.sqrt(Math.pow(xa-pointCopy.getX(), 2) + Math.pow(ya-pointCopy.getY()-9, 2));
 			}
+			else if(yb <= ya && yb <= yc)
+			{
+				distance = Math.sqrt(Math.pow(xb-pointCopy.getX(), 2) + Math.pow(yb-pointCopy.getY()-9, 2));
+			}
+			else if(yc <= yb && yc <= ya)
+			{
+				distance = Math.sqrt(Math.pow(xc-pointCopy.getX(), 2) + Math.pow(yc-pointCopy.getY()-9, 2));
+			}
+			return (6>=distance); 
 		}
 		return false;
+	}
+	
+	public void rotateShape(int index, MouseEvent e)
+	{ 
+		Shape shape = shapes.get(index);
+		double xDiff = shape.getCenter().getX()-e.getX();
+		double yDiff = shape.getCenter().getY()-e.getY();
+		double angle = Math.atan2(yDiff, xDiff) - Math.PI / 2;
+		shape.setRotation(angle % (2*Math.PI));
+		updateView();
 	}
 	
 	public void moveShape(int index, Double mouseDragStart, MouseEvent e)
@@ -78,11 +151,11 @@ public class Drawing extends CS355Drawing {
 		
 		if(shape.getShapeType().equals(Shape.type.LINE))
 		{
-			Line l = (Line) shape;
-			double x2 = l.getEnd().getX() + xDiff;
-			double y2 = l.getEnd().getY() + yDiff;
-			Point2D.Double updatedEnd = new Point2D.Double((double)x2, (double)y2);
-			l.setEnd(updatedEnd);
+//			Line l = (Line) shape;
+//			double x2 = l.getEnd().getX() + xDiff;
+//			double y2 = l.getEnd().getY() + yDiff;
+//			Point2D.Double updatedEnd = new Point2D.Double((double)x2, (double)y2);
+//			l.setEnd(updatedEnd);
 		}
 		if(shape.getShapeType().equals(Shape.type.TRIANGLE))
 		{
@@ -225,7 +298,7 @@ public class Drawing extends CS355Drawing {
 	}
 	
 	//notifies observer (view) that the model has changed
-	private void updateView()
+	public void updateView()
 	{
 		this.setChanged();
 		this.notifyObservers();

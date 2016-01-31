@@ -108,7 +108,7 @@ public class View implements ViewRefresher {
 		if(selected)
 		{
 			g2d.drawRect(-width/2,-height/2,width,height);
-			//TODO draw drag handle
+			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -124,7 +124,7 @@ public class View implements ViewRefresher {
 		if(selected)
 		{
 			g2d.drawRect(-width/2,-height/2,width,height);
-			//TODO draw drag handle
+			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -139,7 +139,18 @@ public class View implements ViewRefresher {
 		int x2 = (int)l.getEnd().getX();
 		int y2 = (int)l.getEnd().getY();
 		
-		g2d.drawLine(0, 0, x2-x1, y2-y1);
+		if(selected)
+		{
+//			double slope = (l.getCenter().getY()-l.getEnd().getY())/(l.getEnd().getX()-l.getCenter().getX());
+//			double tangentSlope = 1/slope;
+			
+			g2d.drawOval(-6, -6, 11, 11); //center
+			g2d.drawOval((x2-x1)-6, (y2-y1)-6, 11, 11); //end
+		}
+		else
+		{
+			g2d.drawLine(0, 0, x2-x1, y2-y1);
+		}
 	}
 	
 	private void drawRectangle(Graphics2D g2d, Rectangle r, boolean selected) 
@@ -150,7 +161,7 @@ public class View implements ViewRefresher {
 		if(selected)
 		{
 			g2d.drawRect(-width/2,-height/2,width,height);
-			//TODO draw drag handle
+			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -166,7 +177,7 @@ public class View implements ViewRefresher {
 		if(selected)
 		{
 			g2d.drawRect(-width/2,-height/2,width,height);
-			//TODO draw drag handle
+			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -190,7 +201,18 @@ public class View implements ViewRefresher {
 		if(selected)
 		{
 			g2d.drawPolygon(xCoordinates, yCoordinates, 3);
-			//TODO draw drag handle
+			if(ya <= yb && ya <= yc)
+			{
+				g2d.drawOval(xa-6, ya - 15, 11, 11);
+			}
+			else if(yb <= ya && yb <= yc)
+			{
+				g2d.drawOval(xb-6, yb - 15, 11, 11);
+			}
+			else if(yc <= yb && yc <= ya)
+			{
+				g2d.drawOval(xc-6, yc - 15, 11, 11);
+			}
 		}
 		else
 		{

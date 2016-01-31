@@ -21,6 +21,8 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	private int currentShapeIndex;
 	private Point2D.Double mouseDragStart;
 	private mode currentMode = mode.NONE;
+	private boolean rotating = false;
+	private String movingLine = "";
 	
 	public enum mode {
 		SHAPE, SELECT, ZOOM_IN, ZOOM_OUT, NONE
@@ -41,6 +43,8 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		Drawing.instance().setCurrentShapeIndex(-1);
 		currentShapeIndex = -1;
 		mouseDragStart = null;
+		rotating = false;
+		movingLine = "";
 	}
 
 	@Override
@@ -107,7 +111,27 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 			int x = e.getX();
 			int y = e.getY();
 			Point2D.Double point = new Point2D.Double((double)x, (double)y);
-			if(Drawing.instance().mousePressedInSelectedShape(point, 4))
+			if(Drawing.instance().getShape(currentShapeIndex).getShapeType().equals(Shape.type.LINE))
+			{
+				Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
+				
+				double startDistance = Math.sqrt(Math.pow(l.getCenter().getX() - x, 2) + Math.pow(l.getCenter().getY() - y, 2));
+				double endDistance = Math.sqrt(Math.pow(l.getEnd().getX() - x, 2) + Math.pow(l.getEnd().getY() - y, 2));
+				if(6>=startDistance)
+				{
+					movingLine = "start";
+				}
+				else if(6>=endDistance)
+				{
+					movingLine = "end";
+				}
+				
+			}
+			else if(Drawing.instance().mousePressedInRotationHandle(point, 4))
+			{
+				rotating = true;
+			}
+			else if(Drawing.instance().mousePressedInSelectedShape(point, 4))
 			{
 				mouseDragStart = point;
 			}
@@ -139,6 +163,8 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		}
 		else if(currentMode.equals(mode.SELECT) && currentShapeIndex != -1)
 		{
+			movingLine = "";
+			rotating = false;
 			this.mouseDragStart=null;
 		}
 	}
@@ -162,10 +188,29 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		{
 			Drawing.instance().updateShape(this.currentShapeIndex, this.mouseDragStart, e);	
 		}
-		else if(currentMode.equals(mode.SELECT) && currentShapeIndex != -1 && mouseDragStart != null) //shape selected and being moved
+		else if(currentMode.equals(mode.SELECT) && currentShapeIndex != -1) //shape selected and being moved
 		{
-			Drawing.instance().moveShape(this.currentShapeIndex, this.mouseDragStart, e);
-			this.mouseDragStart = new Point2D.Double((double)e.getX(), (double)e.getY());
+			if(movingLine.equals("start"))
+			{
+				Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
+				l.setCenter(new Point2D.Double((double)e.getX(), (double)e.getY()));
+				Drawing.instance().updateView();
+			}
+			else if(movingLine.equals("end"))
+			{
+				Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
+				l.setEnd(new Point2D.Double((double)e.getX(), (double)e.getY()));
+				Drawing.instance().updateView();
+			}
+			if(rotating)
+			{
+				Drawing.instance().rotateShape(this.currentShapeIndex, e);
+			}
+			else if(mouseDragStart != null)
+			{
+				Drawing.instance().moveShape(this.currentShapeIndex, this.mouseDragStart, e);
+				this.mouseDragStart = new Point2D.Double((double)e.getX(), (double)e.getY());
+			}
 		}
 	}
 
@@ -304,6 +349,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void openDrawing(File file)
 	{
+		switchStates(mode.NONE);
 		Drawing.instance().open(file);
 	}
 

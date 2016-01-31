@@ -11,9 +11,6 @@ import java.awt.geom.Point2D.Double;
  */
 public class Circle extends Shape {
 
-	// The center of this shape.
-	private Point2D.Double center;
-
 	// The radius.
 	private double radius;
 
@@ -30,7 +27,6 @@ public class Circle extends Shape {
 		super.setShapeType(Shape.type.CIRCLE);
 
 		// Set fields.
-		this.center = center;
 		this.radius = radius;
 	}
 
