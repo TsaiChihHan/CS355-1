@@ -65,6 +65,16 @@ public class Circle extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
+		//check bounding box before transforming
+		double boundingHeight = ((2 * radius) * Math.abs(Math.sin(rotation))) + ((2 * radius) * Math.abs(Math.cos(rotation)));
+		double boundingWidth = boundingHeight;
+		double boundingX1 = center.getX() - boundingWidth/2;
+		double boundingX2 = center.getX() + boundingWidth/2;
+		double boundingY1 = center.getY() - boundingHeight/2;
+		double boundingY2 = center.getY() + boundingHeight/2;
+		if(!((boundingX1<=pt.getX() && pt.getX()<=boundingX2) && (boundingY1<=pt.getY() && pt.getY()<=boundingY2)))
+			return false;
+				
 		AffineTransform worldToObj = new AffineTransform();
 		worldToObj.rotate(-rotation);
 		worldToObj.translate(-center.getX(),-center.getY());
