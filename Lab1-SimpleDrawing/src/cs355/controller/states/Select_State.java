@@ -84,6 +84,10 @@ public class Select_State implements IControllerState {
 			{
 				this.lineHandleGrabbed = linePoint.END;
 			}
+			else if(this.mousePressedInSelectedShape(point, 4))
+			{
+				this.mouseDragStart = point;
+			}
 			
 		}
 		else if(this.mousePressedInRotationHandle(point, 4))
