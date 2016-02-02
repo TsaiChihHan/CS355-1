@@ -18,7 +18,7 @@ import cs355.model.drawing.Triangle;
 
 public class Select_State implements IControllerState {
 
-	final int TOLERANCE = 4;
+	private static final int TOLERANCE = 4;
 	private int currentShapeIndex;
 	private Point2D.Double mouseDragStart;
 	private linePoint lineHandleGrabbed;
@@ -84,17 +84,17 @@ public class Select_State implements IControllerState {
 			{
 				this.lineHandleGrabbed = linePoint.END;
 			}
-			else if(this.mousePressedInSelectedShape(point, 4))
+			else if(this.mousePressedInSelectedShape(point))
 			{
 				this.mouseDragStart = point;
 			}
 			
 		}
-		else if(this.mousePressedInRotationHandle(point, 4))
+		else if(this.mousePressedInRotationHandle(point))
 		{
 			this.rotating = true;
 		}
-		else if(this.mousePressedInSelectedShape(point, 4))
+		else if(this.mousePressedInSelectedShape(point))
 		{
 			this.mouseDragStart = point;
 		}
@@ -125,11 +125,11 @@ public class Select_State implements IControllerState {
 		}
 		if(rotating)
 		{
-			this.rotateShape(this.currentShapeIndex, e);
+			this.rotateShape(e);
 		}
 		else if(mouseDragStart != null)
 		{
-			this.moveShape(this.currentShapeIndex, this.mouseDragStart, e);
+			this.moveShape(this.mouseDragStart, e);
 			this.mouseDragStart = new Point2D.Double((double)e.getX(), (double)e.getY());
 		}
 	}
@@ -161,9 +161,10 @@ public class Select_State implements IControllerState {
 	
 	//*********************************************************************************************************************
 	
-	private void moveShape(int index, Double mouseDragStart, MouseEvent e)
+	//moves the current selected shape according to how far the mouse has been dragged
+	private void moveShape(Double mouseDragStart, MouseEvent e)
 	{ 
-		Shape shape = Drawing.instance().getShape(index);
+		Shape shape = Drawing.instance().getShape(this.currentShapeIndex);
 		
 		double xDiff = e.getX()-mouseDragStart.getX();
 		double yDiff = e.getY()-mouseDragStart.getY();
@@ -210,50 +211,31 @@ public class Select_State implements IControllerState {
 		Drawing.instance().updateView();
 	}
 	
-	private void rotateShape(int index, MouseEvent e)
+	//rotates the current selected shape according the position the mouse has been dragged to
+	private void rotateShape(MouseEvent e)
 	{ 
-		Shape shape = Drawing.instance().getShape(index);
+		Shape shape = Drawing.instance().getShape(this.currentShapeIndex);
 		double xDiff = shape.getCenter().getX()-e.getX();
 		double yDiff = shape.getCenter().getY()-e.getY();
 		double angle = Math.atan2(yDiff, xDiff) - Math.PI / 2;
 		shape.setRotation(angle % (2*Math.PI));
 		Drawing.instance().updateView();
 	}
-
-//	private int selectShape(Point2D.Double point, double tolerance)
-//	{
-//		ArrayList<Shape> shapes = (ArrayList)Drawing.instance().getShapes();
-//		for(int i=shapes.size()-1;i>=0;i--)
-//		{
-//			Shape shape = shapes.get(i);
-//			Point2D.Double pointCopy = (Double) point.clone();
-//			if(shape.pointInShape(pointCopy, tolerance))
-//			{
-//				currentShapeIndex = i;
-//				Drawing.instance().setCurrentColor(shape.getColor());
-//				Drawing.instance().updateView();
-//				return i;
-//			}
-//		}
-//		currentShapeIndex = -1;
-//		Drawing.instance().updateView();
-//		return currentShapeIndex;
-//	}
 	
 	//checks if a mouse press occurred in the same boundaries of the selected shape
-	private boolean mousePressedInSelectedShape(Point2D.Double point, double tolerance)
+	private boolean mousePressedInSelectedShape(Point2D.Double point)
 	{
 		ArrayList<Shape> shapes = (ArrayList<Shape>) Drawing.instance().getShapes();
 		Shape shape = shapes.get(currentShapeIndex);
 		Point2D.Double pointCopy = (Double) point.clone();
-		return shape.pointInShape(pointCopy, tolerance);
+		return shape.pointInShape(pointCopy, TOLERANCE);
 	}
 	
-	private boolean mousePressedInRotationHandle(Point2D.Double point, double tolerance)
+	//checks if a mouse press occured in the rotation handle of the current selected shape
+	private boolean mousePressedInRotationHandle(Point2D.Double point)
 	{
 		ArrayList<Shape> shapes = (ArrayList<Shape>)Drawing.instance().getShapes();
 		Shape shape = shapes.get(currentShapeIndex);
-		//g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		double height = -1;
 		switch(shape.getShapeType())
 		{
