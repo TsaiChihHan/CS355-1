@@ -57,9 +57,8 @@ public class Line extends Shape {
 		double x2 = end.getX(); 
 		double y2 = end.getY();
 		
-//		double distance = Math.abs(((y2-y1)*x0) - ((x2-x1)*y0) + (x2*y1) - (y2*x1))/Math.sqrt(Math.pow(y2-y1, 2)+Math.pow(x2-x1, 2));
-//		
-//		Point2D.Double closesPoint = new Point2D.Double();
+		double distance = Math.abs(((y2-y1)*x0) - ((x2-x1)*y0) + (x2*y1) - (y2*x1))/Math.sqrt(Math.pow(y2-y1, 2)+Math.pow(x2-x1, 2));
+
 		double slope = (y1-y2)/(x2-x1);
 		double tangentSlope = -1/slope;
 		double degree = Math.atan(tangentSlope);
@@ -67,7 +66,7 @@ public class Line extends Shape {
 		y0 += Math.sin(degree);
 		x0 += Math.cos(degree);
 		
-		if(x0 <= (Math.max(x1, x2)+tolerance) && x0 >= (Math.min(x1, x2)-tolerance) && y0 <= (Math.max(y1, y2)+tolerance) && y0 >= (Math.min(y1, y2)-tolerance))
+		if(distance <= tolerance && (x0 <= (Math.max(x1, x2)+tolerance) && x0 >= (Math.min(x1, x2)-tolerance) && y0 <= (Math.max(y1, y2)+tolerance) && y0 >= (Math.min(y1, y2)-tolerance)))
 		{
 			return true;
 		}

@@ -66,8 +66,8 @@ public class Drawing extends CS355Drawing {
 		
 		Shape s = shapes.get(index);
 		shapes.remove(index);
-		currentShapeIndex = addShape(s);
-		updateView();
+		currentShapeIndex = shapes.size();
+		addShape(s);
 	}
 
 	@Override

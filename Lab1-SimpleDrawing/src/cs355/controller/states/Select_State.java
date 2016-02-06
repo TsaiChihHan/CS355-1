@@ -40,63 +40,77 @@ public class Select_State implements IControllerState {
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
-		int x = e.getX();
-		int y = e.getY();
-		Point2D.Double point = new Point2D.Double((double)x, (double)y);
-		this.currentShapeIndex = -1;
-		
-		ArrayList<Shape> shapes = (ArrayList<Shape>) Drawing.instance().getShapes();
-		for(int i=shapes.size()-1;i>=0;i--)
-		{
-			Shape shape = shapes.get(i);
-			Point2D.Double pointCopy = (Double) point.clone();
-			if(shape.pointInShape(pointCopy, TOLERANCE))
-			{
-				Drawing.instance().setCurrentColor(shape.getColor());
-				this.currentShapeIndex = i;
-				break;
-			}
-		}
-		Drawing.instance().setCurrentShapeIndex(this.currentShapeIndex);
-		Drawing.instance().updateView();
+		return;
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		if(this.currentShapeIndex == -1)
-			return;
-		
 		int x = e.getX();
 		int y = e.getY();
 		Point2D.Double point = new Point2D.Double((double)x, (double)y);
-		if(Drawing.instance().getShape(this.currentShapeIndex).getShapeType().equals(Shape.type.LINE))
+		
+		//check drag handles
+		if(this.currentShapeIndex != -1)
 		{
-			Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
-			double startDistance = Math.sqrt(Math.pow(l.getCenter().getX() - x, 2) + Math.pow(l.getCenter().getY() - y, 2));
-			double endDistance = Math.sqrt(Math.pow(l.getEnd().getX() - x, 2) + Math.pow(l.getEnd().getY() - y, 2));
-			
-			if(6>=startDistance)
+			if(Drawing.instance().getShape(this.currentShapeIndex).getShapeType().equals(Shape.type.LINE))
 			{
-				this.lineHandleGrabbed = linePoint.START;
+				Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
+				double startDistance = Math.sqrt(Math.pow(l.getCenter().getX() - x, 2) + Math.pow(l.getCenter().getY() - y, 2));
+				double endDistance = Math.sqrt(Math.pow(l.getEnd().getX() - x, 2) + Math.pow(l.getEnd().getY() - y, 2));
+				
+				if(6>=startDistance)
+				{
+					this.lineHandleGrabbed = linePoint.START;
+					return;
+				}
+				else if(6>=endDistance)
+				{
+					this.lineHandleGrabbed = linePoint.END;
+					return;
+				}
+				else if(this.mousePressedInSelectedShape(point))
+				{
+					this.mouseDragStart = point;
+					return;
+				}
 			}
-			else if(6>=endDistance)
+			else if(this.mousePressedInRotationHandle(point))
 			{
-				this.lineHandleGrabbed = linePoint.END;
+				this.rotating = true;
+				return;
 			}
-			else if(this.mousePressedInSelectedShape(point))
+		}
+		
+		this.checkShapeSelected(e);
+		if(this.currentShapeIndex != -1 && this.mousePressedInSelectedShape(point))
+		{
+			if(Drawing.instance().getShape(this.currentShapeIndex).getShapeType().equals(Shape.type.LINE))
+			{
+				Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
+				double startDistance = Math.sqrt(Math.pow(l.getCenter().getX() - x, 2) + Math.pow(l.getCenter().getY() - y, 2));
+				double endDistance = Math.sqrt(Math.pow(l.getEnd().getX() - x, 2) + Math.pow(l.getEnd().getY() - y, 2));
+				
+				if(6>=startDistance)
+				{
+					this.lineHandleGrabbed = linePoint.START;
+					return;
+				}
+				else if(6>=endDistance)
+				{
+					this.lineHandleGrabbed = linePoint.END;
+					return;
+				}
+				else if(this.mousePressedInSelectedShape(point))
+				{
+					this.mouseDragStart = point;
+					return;
+				}
+			}
+			else
 			{
 				this.mouseDragStart = point;
 			}
-			
-		}
-		else if(this.mousePressedInRotationHandle(point))
-		{
-			this.rotating = true;
-		}
-		else if(this.mousePressedInSelectedShape(point))
-		{
-			this.mouseDragStart = point;
 		}
 	}
 
@@ -160,6 +174,29 @@ public class Select_State implements IControllerState {
 	}
 	
 	//*********************************************************************************************************************
+	
+	private void checkShapeSelected(MouseEvent e)
+	{ 
+		int x = e.getX();
+		int y = e.getY();
+		Point2D.Double point = new Point2D.Double((double)x, (double)y);
+		this.currentShapeIndex = -1;
+		
+		ArrayList<Shape> shapes = (ArrayList<Shape>) Drawing.instance().getShapes();
+		for(int i=shapes.size()-1;i>=0;i--)
+		{
+			Shape shape = shapes.get(i);
+			Point2D.Double pointCopy = (Double) point.clone();
+			if(shape.pointInShape(pointCopy, TOLERANCE))
+			{
+				Drawing.instance().setCurrentColor(shape.getColor());
+				this.currentShapeIndex = i;
+				break;
+			}
+		}
+		Drawing.instance().setCurrentShapeIndex(this.currentShapeIndex);
+		Drawing.instance().updateView();
+	}
 	
 	//moves the current selected shape according to how far the mouse has been dragged
 	private void moveShape(Double mouseDragStart, MouseEvent e)
