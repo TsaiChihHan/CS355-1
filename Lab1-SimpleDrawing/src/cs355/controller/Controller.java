@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.util.Iterator;
 
@@ -137,18 +138,18 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void zoomInButtonHit()
 	{
-		if(this.zoom >= 4.00)
+		if(this.zoom > 2.00)
 			return;
-		this.zoom += 0.25;
+		this.zoom = this.zoom * 2.0;
 		Drawing.instance().updateView();
 	}
 
 	@Override
 	public void zoomOutButtonHit()
 	{
-		if(this.zoom <= 0.25)
+		if(this.zoom < 0.5)
 			return;
-		this.zoom -= 0.25;
+		this.zoom = this.zoom / 2.0;
 		Drawing.instance().updateView();
 	}
 
@@ -337,5 +338,44 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public Double getZoom()
 	{
 		return zoom;
+	}
+	
+	public AffineTransform object_world_view(Shape s)
+	{
+		AffineTransform transform = new AffineTransform();
+		
+        AffineTransform translation = new AffineTransform(1.0, 0, 0, 1.0, s.getCenter().getX(), s.getCenter().getY());
+        AffineTransform rotation = new AffineTransform(Math.cos(s.getRotation()), Math.sin(s.getRotation()), -Math.sin(s.getRotation()), Math.cos(s.getRotation()), 0, 0);
+
+
+		// World to View
+        transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0)); //scale
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -256 + 256*(1/zoom), -256 + 256*(1/zoom))); //t
+
+		// Object to World
+		transform.concatenate(translation);
+		transform.concatenate(rotation);
+		
+		return transform;
+	}
+	
+	public AffineTransform view_world_object(Shape s)
+	{
+		AffineTransform transform = new AffineTransform();
+		
+        AffineTransform translation = new AffineTransform(1.0, 0.0, 0.0, 1.0, -s.getCenter().getX(), -s.getCenter().getY());
+
+        AffineTransform rotation = new AffineTransform(Math.cos(s.getRotation()), -Math.sin(s.getRotation()), Math.sin(s.getRotation()), Math.cos(s.getRotation()), 0.0, 0.0);
+
+
+		// World to object
+		transform.concatenate(rotation);
+		transform.concatenate(translation);
+		
+		// View to world
+        transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -(-256 + 256*(1/zoom)), -(-256 + 256*(1/zoom)))); //t
+        transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0)); //scale
+		
+		return transform;
 	}
 }

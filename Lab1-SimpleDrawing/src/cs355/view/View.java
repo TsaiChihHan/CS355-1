@@ -36,11 +36,7 @@ public class View implements ViewRefresher {
 			
 			g2d.setColor(shape.getColor()); //set color of shape we are going to draw
 			
-			AffineTransform objToWorld = new AffineTransform();
-			objToWorld.translate(shape.getCenter().getX(),shape.getCenter().getY());
-			objToWorld.rotate(shape.getRotation());
-			objToWorld.scale(Controller.instance().getZoom(), Controller.instance().getZoom());
-			g2d.setTransform(objToWorld);
+			g2d.setTransform(Controller.instance().object_world_view(shape)); //object->world->view
 			
 			switch (shape.getShapeType()) 
 			{
@@ -71,11 +67,8 @@ public class View implements ViewRefresher {
 			Shape shape = shapes.get(selectedShapeIndex);
 			
 			g2d.setColor(Color.red);
-			AffineTransform objToWorld = new AffineTransform();
-			objToWorld.translate(shape.getCenter().getX(),shape.getCenter().getY());
-			objToWorld.rotate(shape.getRotation());
-			objToWorld.scale(Controller.instance().getZoom(), Controller.instance().getZoom());
-			g2d.setTransform(objToWorld);
+			
+			g2d.setTransform(Controller.instance().object_world_view(shape)); //object->world->view
 			
 			switch (shape.getShapeType()) 
 			{

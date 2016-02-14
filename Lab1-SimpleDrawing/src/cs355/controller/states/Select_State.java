@@ -191,11 +191,8 @@ public class Select_State implements IControllerState {
 			
 			if(shape.getShapeType() != Shape.type.LINE)
 			{
-				AffineTransform worldToObj = new AffineTransform();
-				worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
-				worldToObj.rotate(-shape.getRotation());
-				worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
-				worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+				AffineTransform viewToObj = Controller.instance().view_world_object(shape);
+				viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
 			}
 			
 			if(shape.pointInShape(pointCopy, TOLERANCE)) //TODO
@@ -214,8 +211,8 @@ public class Select_State implements IControllerState {
 	{ 
 		Shape shape = Drawing.instance().getShape(this.currentShapeIndex);
 		
-		double xDiff = e.getX()-mouseDragStart.getX();
-		double yDiff = e.getY()-mouseDragStart.getY();
+		double xDiff = (e.getX()-mouseDragStart.getX())/Controller.instance().getZoom();
+		double yDiff = (e.getY()-mouseDragStart.getY())/Controller.instance().getZoom();
 		double x = shape.getCenter().getX() + xDiff;
 		double y = shape.getCenter().getY() + yDiff;
 		Point2D.Double updatedCenter = new Point2D.Double((double)x, (double)y);
@@ -279,11 +276,8 @@ public class Select_State implements IControllerState {
 		
 		if(shape.getShapeType() != Shape.type.LINE)
 		{
-			AffineTransform worldToObj = new AffineTransform();
-			worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
-			worldToObj.rotate(-shape.getRotation());
-			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
-			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+			AffineTransform viewToObj = Controller.instance().view_world_object(shape);
+			viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
 		}
 		
 		return shape.pointInShape(pointCopy, TOLERANCE);
@@ -315,11 +309,8 @@ public class Select_State implements IControllerState {
 		if(height!=-1)
 		{
 			Point2D.Double pointCopy = (Double) point.clone();
-			AffineTransform worldToObj = new AffineTransform();
-			worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
-			worldToObj.rotate(-shape.getRotation());
-			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
-			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+			AffineTransform viewToObj = Controller.instance().view_world_object(shape);
+			viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
 			double yDiff = pointCopy.getY()+((height/2) + 9);
 			
 			double distance = Math.sqrt(Math.pow(pointCopy.getX(), 2) + Math.pow(yDiff, 2));
@@ -328,11 +319,8 @@ public class Select_State implements IControllerState {
 		if(shape.getShapeType().equals(Shape.type.TRIANGLE))
 		{
 			Point2D.Double pointCopy = (Double) point.clone();
-			AffineTransform worldToObj = new AffineTransform();
-			worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
-			worldToObj.rotate(-shape.getRotation());
-			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
-			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+			AffineTransform viewToObj = Controller.instance().view_world_object(shape);
+			viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
 			
 			Triangle t = (Triangle)shape;
 			double xa = t.getA().getX()-t.getCenter().getX();
