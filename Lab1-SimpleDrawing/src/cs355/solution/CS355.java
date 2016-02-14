@@ -16,7 +16,7 @@ public class CS355 {
 	 */
 	public static void main(String[] args) 
 	{
-		Controller c = new Controller();
+		Controller c = Controller.instance();
 		GUIFunctions.createCS355Frame(c, c.getView());
 
 		GUIFunctions.refresh();

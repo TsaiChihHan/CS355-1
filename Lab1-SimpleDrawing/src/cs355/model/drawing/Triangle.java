@@ -1,7 +1,6 @@
 package cs355.model.drawing;
 
 import java.awt.Color;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
@@ -86,11 +85,6 @@ public class Triangle extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
-		AffineTransform worldToObj = new AffineTransform();
-		worldToObj.rotate(-rotation);
-		worldToObj.translate(-center.getX(),-center.getY());
-		worldToObj.transform(pt, pt); //transform pt to object coordinates
-		
 		double ax = a.getX()-center.getX();
 		double bx = b.getX()-center.getX();
 		double cx = c.getX()-center.getX();

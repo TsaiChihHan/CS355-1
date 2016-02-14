@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import cs355.GUIFunctions;
+import cs355.controller.Controller;
 import cs355.model.drawing.*;
 
 public class View implements ViewRefresher {
@@ -34,9 +35,11 @@ public class View implements ViewRefresher {
 			Shape shape = shapes.get(i);
 			
 			g2d.setColor(shape.getColor()); //set color of shape we are going to draw
+			
 			AffineTransform objToWorld = new AffineTransform();
 			objToWorld.translate(shape.getCenter().getX(),shape.getCenter().getY());
 			objToWorld.rotate(shape.getRotation());
+			objToWorld.scale(Controller.instance().getZoom(), Controller.instance().getZoom());
 			g2d.setTransform(objToWorld);
 			
 			switch (shape.getShapeType()) 
@@ -71,6 +74,7 @@ public class View implements ViewRefresher {
 			AffineTransform objToWorld = new AffineTransform();
 			objToWorld.translate(shape.getCenter().getX(),shape.getCenter().getY());
 			objToWorld.rotate(shape.getRotation());
+			objToWorld.scale(Controller.instance().getZoom(), Controller.instance().getZoom());
 			g2d.setTransform(objToWorld);
 			
 			switch (shape.getShapeType()) 

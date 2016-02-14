@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 
+import cs355.controller.Controller;
 import cs355.model.drawing.Circle;
 import cs355.model.drawing.Drawing;
 import cs355.model.drawing.Ellipse;
@@ -187,7 +188,17 @@ public class Select_State implements IControllerState {
 		{
 			Shape shape = shapes.get(i);
 			Point2D.Double pointCopy = (Double) point.clone();
-			if(shape.pointInShape(pointCopy, TOLERANCE))
+			
+			if(shape.getShapeType() != Shape.type.LINE)
+			{
+				AffineTransform worldToObj = new AffineTransform();
+				worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
+				worldToObj.rotate(-shape.getRotation());
+				worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
+				worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+			}
+			
+			if(shape.pointInShape(pointCopy, TOLERANCE)) //TODO
 			{
 				Drawing.instance().setCurrentColor(shape.getColor());
 				this.currentShapeIndex = i;
@@ -265,6 +276,16 @@ public class Select_State implements IControllerState {
 		ArrayList<Shape> shapes = (ArrayList<Shape>) Drawing.instance().getShapes();
 		Shape shape = shapes.get(currentShapeIndex);
 		Point2D.Double pointCopy = (Double) point.clone();
+		
+		if(shape.getShapeType() != Shape.type.LINE)
+		{
+			AffineTransform worldToObj = new AffineTransform();
+			worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
+			worldToObj.rotate(-shape.getRotation());
+			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
+			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+		}
+		
 		return shape.pointInShape(pointCopy, TOLERANCE);
 	}
 	
@@ -295,6 +316,7 @@ public class Select_State implements IControllerState {
 		{
 			Point2D.Double pointCopy = (Double) point.clone();
 			AffineTransform worldToObj = new AffineTransform();
+			worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
 			worldToObj.rotate(-shape.getRotation());
 			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
 			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
@@ -307,6 +329,7 @@ public class Select_State implements IControllerState {
 		{
 			Point2D.Double pointCopy = (Double) point.clone();
 			AffineTransform worldToObj = new AffineTransform();
+			worldToObj.scale(1/Controller.instance().getZoom(), 1/Controller.instance().getZoom());
 			worldToObj.rotate(-shape.getRotation());
 			worldToObj.translate(-shape.getCenter().getX(),-shape.getCenter().getY());
 			worldToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates

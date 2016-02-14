@@ -18,13 +18,24 @@ import cs355.view.ViewRefresher;
 
 public class Controller implements CS355Controller, MouseListener, MouseMotionListener  {
 	
+	private static Controller _instance; //this class is a singleton
+	
 	private View view;
 	IControllerState state;
-
-	public Controller()
+	private double zoom;
+	
+	public static Controller instance()
+	{
+		if (_instance == null) 
+			_instance = new Controller();
+		return _instance;
+	}
+	
+	private Controller()
 	{
 		this.view = new View(); //creates view, which attaches itself as listener to model
-		state = new Nothing_State();
+		this.state = new Nothing_State();
+		this.zoom = 1.0;
 	}
 
 	@Override
@@ -126,25 +137,33 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void zoomInButtonHit()
 	{
-		//TODO
+		if(this.zoom >= 4.00)
+			return;
+		this.zoom += 0.25;
+		Drawing.instance().updateView();
 	}
 
 	@Override
 	public void zoomOutButtonHit()
 	{
-		//TODO
+		if(this.zoom <= 0.25)
+			return;
+		this.zoom -= 0.25;
+		Drawing.instance().updateView();
 	}
 
 	@Override
 	public void hScrollbarChanged(int value)
 	{
 		// TODO Auto-generated method stub
+		System.out.println(value);
 	}
 
 	@Override
 	public void vScrollbarChanged(int value)
 	{
 		// TODO Auto-generated method stub
+		System.out.println(value);
 	}
 
 	@Override
@@ -313,5 +332,10 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public ViewRefresher getView()
 	{
 		return view;
+	}
+	
+	public Double getZoom()
+	{
+		return zoom;
 	}
 }
