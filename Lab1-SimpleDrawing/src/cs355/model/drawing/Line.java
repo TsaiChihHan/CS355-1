@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
+import cs355.controller.Controller;
+
 /**
  * Add your line code here. You can add fields, but you cannot
  * change the ones that already exist. This includes the names!
@@ -48,6 +50,7 @@ public class Line extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
+		pt = Controller.instance().viewPoint_worldPoint(pt);
 		double x0 = pt.getX(); 
 		double y0 = pt.getY(); 
 		

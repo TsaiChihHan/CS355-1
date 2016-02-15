@@ -2,8 +2,10 @@ package cs355.controller.states;
 
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 
+import cs355.controller.Controller;
 import cs355.model.drawing.Circle;
 import cs355.model.drawing.Drawing;
 import cs355.model.drawing.Ellipse;
@@ -32,9 +34,11 @@ public class Drawing_State implements IControllerState {
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
+		Point2D.Double point = Controller.instance().viewPoint_worldPoint(e);
+        
 		if(this.shapeType.equals(Shape.type.TRIANGLE))
 		{
-			this.trianglePoints.add(new Point2D.Double(e.getX(), e.getY()));
+			this.trianglePoints.add(new Point2D.Double(point.getX(), point.getY()));
 			if (this.trianglePoints.size() == 3) //user placed final point needed to draw triangle
 			{
 				double centerX = (trianglePoints.get(0).getX() + trianglePoints.get(1).getX() + trianglePoints.get(2).getX())/3;
@@ -49,29 +53,28 @@ public class Drawing_State implements IControllerState {
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
-		int x = e.getX();
-		int y = e.getY();
-		Point2D.Double point = new Point2D.Double((double)x, (double)y);
+		Point2D.Double point = Controller.instance().viewPoint_worldPoint(e);
+        
 		switch (this.shapeType) 
 		{
 			case CIRCLE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = (Double) point.clone();
 				this.currentShapeIndex = Drawing.instance().addShape(new Circle(Drawing.instance().getCurrentColor(), point, 0));
 				break;
 			case ELLIPSE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = (Double) point.clone();
 				this.currentShapeIndex = Drawing.instance().addShape(new Ellipse(Drawing.instance().getCurrentColor(), point, 0, 0));
 				break;
 			case LINE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = (Double) point.clone();
 				this.currentShapeIndex = Drawing.instance().addShape(new Line(Drawing.instance().getCurrentColor(), point, point));
 				break;
 			case RECTANGLE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = (Double) point.clone();
 				this.currentShapeIndex = Drawing.instance().addShape(new Rectangle(Drawing.instance().getCurrentColor(), point, 0, 0));
 				break;
 			case SQUARE:
-				this.mouseDragStart = new Point2D.Double((double)x, (double)y);
+				this.mouseDragStart = (Double) point.clone();
 				this.currentShapeIndex = Drawing.instance().addShape(new Square(Drawing.instance().getCurrentColor(), point, 0));
 				break;
 			default:
@@ -103,24 +106,26 @@ public class Drawing_State implements IControllerState {
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
+		Point2D.Double point = Controller.instance().viewPoint_worldPoint(e);
+        
 		if(this.currentShapeIndex != -1)
 		{
 			switch (Drawing.instance().getShape(this.currentShapeIndex).getShapeType()) 
 			{
 				case LINE:
-					updateLine(e);
+					updateLine(point);
 					break;
 				case ELLIPSE:
-					updateEllipse(mouseDragStart, e);
+					updateEllipse(mouseDragStart, point);
 					break;
 				case RECTANGLE:
-					updateRectangle(mouseDragStart, e);
+					updateRectangle(mouseDragStart, point);
 					break;
 				case CIRCLE:
-					updateCircle(mouseDragStart, e);
+					updateCircle(mouseDragStart, point);
 					break;
 				case SQUARE:
-					updateSquare(mouseDragStart, e);
+					updateSquare(mouseDragStart, point);
 					break;
 				default:
 					break;
@@ -137,13 +142,13 @@ public class Drawing_State implements IControllerState {
 	
 	//*********************************************************************************************************************
 	
-	private void updateLine(MouseEvent e)
+	private void updateLine(Point2D.Double e)
 	{
 		Line l = (Line) Drawing.instance().getShape(this.currentShapeIndex);
 		l.setEnd(new Point2D.Double((double)e.getX(), (double)e.getY()));
 	}
 	
-	private void updateEllipse(Point2D.Double mouseDragStart, MouseEvent e)
+	private void updateEllipse(Point2D.Double mouseDragStart, Point2D.Double e)
 	{
 		Ellipse el = (Ellipse) Drawing.instance().getShape(this.currentShapeIndex);
 		
@@ -156,7 +161,7 @@ public class Drawing_State implements IControllerState {
 		el.setCenter(center);
 	}
 	
-	private void updateRectangle(Point2D.Double mouseDragStart, MouseEvent e)
+	private void updateRectangle(Point2D.Double mouseDragStart, Point2D.Double e)
 	{
 		Rectangle r = (Rectangle) Drawing.instance().getShape(this.currentShapeIndex);
 		
@@ -181,7 +186,7 @@ public class Drawing_State implements IControllerState {
 		r.setCenter(center);
 	}
 	
-	private void updateCircle(Point2D.Double mouseDragStart, MouseEvent e)
+	private void updateCircle(Point2D.Double mouseDragStart, Point2D.Double e)
 	{
 		Circle c = (Circle) Drawing.instance().getShape(this.currentShapeIndex);
 		
@@ -196,7 +201,7 @@ public class Drawing_State implements IControllerState {
 		c.setCenter(center);
 	}
 	
-	private void updateSquare(Point2D.Double mouseDragStart, MouseEvent e)
+	private void updateSquare(Point2D.Double mouseDragStart, Point2D.Double e)
 	{
 		Square s = (Square) Drawing.instance().getShape(this.currentShapeIndex);
 		

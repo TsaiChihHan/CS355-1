@@ -56,6 +56,9 @@ public class Select_State implements IControllerState {
 		{
 			if(Drawing.instance().getShape(this.currentShapeIndex).getShapeType().equals(Shape.type.LINE))
 			{
+				Point2D.Double point2 = Controller.instance().viewPoint_worldPoint(e);
+				x = (int) point2.getX();
+				y = (int) point2.getY();
 				Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
 				double startDistance = Math.sqrt(Math.pow(l.getCenter().getX() - x, 2) + Math.pow(l.getCenter().getY() - y, 2));
 				double endDistance = Math.sqrt(Math.pow(l.getEnd().getX() - x, 2) + Math.pow(l.getEnd().getY() - y, 2));
@@ -128,14 +131,16 @@ public class Select_State implements IControllerState {
 	{
 		if(this.lineHandleGrabbed.equals(linePoint.START))
 		{
+			Point2D.Double point2 = Controller.instance().viewPoint_worldPoint(e);
 			Line l = (Line)Drawing.instance().getShape(this.currentShapeIndex);
-			l.setCenter(new Point2D.Double((double)e.getX(), (double)e.getY()));
+			l.setCenter(new Point2D.Double(point2.getX(), point2.getY()));
 			Drawing.instance().updateView();
 		}
 		else if(this.lineHandleGrabbed.equals(linePoint.END))
 		{
+			Point2D.Double point2 = Controller.instance().viewPoint_worldPoint(e);
 			Line l = (Line)Drawing.instance().getShape(this.currentShapeIndex);
-			l.setEnd(new Point2D.Double((double)e.getX(), (double)e.getY()));
+			l.setEnd(new Point2D.Double(point2.getX(), point2.getY()));
 			Drawing.instance().updateView();
 		}
 		if(rotating)
@@ -260,8 +265,11 @@ public class Select_State implements IControllerState {
 	private void rotateShape(MouseEvent e)
 	{ 
 		Shape shape = Drawing.instance().getShape(this.currentShapeIndex);
-		double xDiff = shape.getCenter().getX()-e.getX();
-		double yDiff = shape.getCenter().getY()-e.getY();
+		
+		Point2D.Double point = Controller.instance().viewPoint_worldPoint(e);
+		
+		double xDiff = shape.getCenter().getX()-point.getX();
+		double yDiff = shape.getCenter().getY()-point.getY();
 		double angle = Math.atan2(yDiff, xDiff) - Math.PI / 2;
 		shape.setRotation(angle % (2*Math.PI));
 		Drawing.instance().updateView();
@@ -279,9 +287,14 @@ public class Select_State implements IControllerState {
 			AffineTransform viewToObj = Controller.instance().view_world_object(shape);
 			viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
 		}
+		else
+		{
+//			pointCopy = Controller.instance().viewPoint_worldPoint(pointCopy);
+		}
 		
 		return shape.pointInShape(pointCopy, TOLERANCE);
 	}
+	
 	
 	//checks if a mouse press occured in the rotation handle of the current selected shape
 	private boolean mousePressedInRotationHandle(Point2D.Double point)

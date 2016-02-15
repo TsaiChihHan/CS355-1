@@ -2,7 +2,6 @@ package cs355.view;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Observable;
 

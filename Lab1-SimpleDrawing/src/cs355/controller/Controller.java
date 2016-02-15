@@ -5,6 +5,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.io.File;
 import java.util.Iterator;
 
@@ -24,6 +26,8 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	private View view;
 	IControllerState state;
 	private double zoom;
+	private double knobSize;
+	private Point2D.Double viewCenter;
 	
 	public static Controller instance()
 	{
@@ -37,6 +41,10 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		this.view = new View(); //creates view, which attaches itself as listener to model
 		this.state = new Nothing_State();
 		this.zoom = 1.0;
+		this.knobSize = 512;
+		viewCenter = new Point2D.Double(256,256);
+//		GUIFunctions.refresh();
+//		this.refreshScroll();
 	}
 
 	@Override
@@ -138,33 +146,51 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void zoomInButtonHit()
 	{
+		System.out.println(-256 + 256*(1/zoom));
 		if(this.zoom > 2.00)
 			return;
 		this.zoom = this.zoom * 2.0;
-		Drawing.instance().updateView();
+		this.knobSize = 512 / zoom;
+		this.refreshScroll();
 	}
 
 	@Override
 	public void zoomOutButtonHit()
 	{
+		System.out.println(-256 + 256*(1/zoom));
 		if(this.zoom < 0.5)
 			return;
 		this.zoom = this.zoom / 2.0;
-		Drawing.instance().updateView();
+		this.knobSize = 512 / zoom;
+		this.refreshScroll();
 	}
 
 	@Override
 	public void hScrollbarChanged(int value)
 	{
-		// TODO Auto-generated method stub
-		System.out.println(value);
+		viewCenter.x = (value + this.knobSize / 2.0);
+		Drawing.instance().updateView();
 	}
 
 	@Override
 	public void vScrollbarChanged(int value)
 	{
-		// TODO Auto-generated method stub
-		System.out.println(value);
+		viewCenter.y = (value + this.knobSize / 2.0);
+		Drawing.instance().updateView();
+	}
+	
+	private void refreshScroll()
+	{
+		GUIFunctions.setVScrollBarKnob((int) this.knobSize);
+		GUIFunctions.setHScrollBarKnob((int) this.knobSize);
+		
+        GUIFunctions.setVScrollBarPosit((int) viewCenter.getY());
+        GUIFunctions.setHScrollBarPosit((int) viewCenter.getX());
+        
+        GUIFunctions.setVScrollBarKnob((int) this.knobSize);
+		GUIFunctions.setHScrollBarKnob((int) this.knobSize);
+		
+		Drawing.instance().updateView();
 	}
 
 	@Override
@@ -335,7 +361,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		return view;
 	}
 	
-	public Double getZoom()
+	public double getZoom()
 	{
 		return zoom;
 	}
@@ -350,7 +376,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 
 		// World to View
         transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0)); //scale
-		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -256 + 256*(1/zoom), -256 + 256*(1/zoom))); //t
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -viewCenter.getX() + 256*(1/zoom), -viewCenter.getY() + 256*(1/zoom))); //t
 
 		// Object to World
 		transform.concatenate(translation);
@@ -373,9 +399,35 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		transform.concatenate(translation);
 		
 		// View to world
-        transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -(-256 + 256*(1/zoom)), -(-256 + 256*(1/zoom)))); //t
+        transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -(-viewCenter.getX() + 256*(1/zoom)), -(-viewCenter.getY() + 256*(1/zoom)))); //t
         transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0)); //scale
 		
 		return transform;
+	}
+	
+	public Point2D.Double viewPoint_worldPoint(MouseEvent e)
+	{
+		int x = e.getX();
+		int y = e.getY();
+		Point2D.Double point = new Point2D.Double((double)x, (double)y);
+		return viewPoint_worldPoint(point);
+	}
+	
+	public Point2D.Double viewPoint_worldPoint(Point2D.Double point)
+	{
+		Point2D.Double pointCopy = (Double) point.clone();
+		AffineTransform transform = new AffineTransform();
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -viewCenter.getX() + 256*(1/zoom), -(-viewCenter.getY() + 256*(1/zoom)))); //t
+        transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0));
+        transform.transform(pointCopy, pointCopy); //transform pt to object coordinates
+        return pointCopy;
+	}
+	
+	public Point2D.Double objectPoint_viewPoint(Shape s, Point2D.Double point)
+	{
+		Point2D.Double pointCopy = (Double) point.clone();
+		AffineTransform transform = object_world_view(s);
+        transform.transform(pointCopy, pointCopy); //transform pt to object coordinates
+        return pointCopy;
 	}
 }
