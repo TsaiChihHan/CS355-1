@@ -19,6 +19,15 @@ public class CS355 {
 		Controller c = Controller.instance();
 		GUIFunctions.createCS355Frame(c, c.getView());
 
+		GUIFunctions.setHScrollBarMax(2048);
+		GUIFunctions.setVScrollBarMax(2048);
+		
+		GUIFunctions.setHScrollBarKnob(512);
+		GUIFunctions.setVScrollBarKnob(512);
+
+		GUIFunctions.setVScrollBarPosit(0);
+		GUIFunctions.setHScrollBarPosit(0);
+
 		GUIFunctions.refresh();
 	}
 }

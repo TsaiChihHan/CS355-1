@@ -28,6 +28,11 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	private double zoom;
 	private double knobSize;
 	private Point2D.Double viewCenter;
+	private boolean updating = false;
+	public static final double ZOOMIN = 2.0;
+	public static final double ZOOMOUT = .5;
+	public static final double ZOOMMIN = .25;
+	public static final double ZOOMMAX = 4.0;
 	
 	public static Controller instance()
 	{
@@ -42,9 +47,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		this.state = new Nothing_State();
 		this.zoom = 1.0;
 		this.knobSize = 512;
-		viewCenter = new Point2D.Double(256,256);
-//		GUIFunctions.refresh();
-//		this.refreshScroll();
+		this.viewCenter = new Point2D.Double(0,0);
 	}
 
 	@Override
@@ -146,51 +149,29 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void zoomInButtonHit()
 	{
-		System.out.println(-256 + 256*(1/zoom));
-		if(this.zoom > 2.00)
-			return;
-		this.zoom = this.zoom * 2.0;
-		this.knobSize = 512 / zoom;
-		this.refreshScroll();
+		this.handleZoom(ZOOMIN);
 	}
 
 	@Override
 	public void zoomOutButtonHit()
 	{
-		System.out.println(-256 + 256*(1/zoom));
-		if(this.zoom < 0.5)
-			return;
-		this.zoom = this.zoom / 2.0;
-		this.knobSize = 512 / zoom;
-		this.refreshScroll();
+		this.handleZoom(ZOOMOUT);
 	}
 
 	@Override
 	public void hScrollbarChanged(int value)
 	{
-		viewCenter.x = (value + this.knobSize / 2.0);
-		Drawing.instance().updateView();
+		viewCenter.x = value + this.knobSize / 2.0;
+		if(!this.updating) //prevents refreshing view too many times
+			Drawing.instance().updateView();
 	}
 
 	@Override
 	public void vScrollbarChanged(int value)
 	{
 		viewCenter.y = (value + this.knobSize / 2.0);
-		Drawing.instance().updateView();
-	}
-	
-	private void refreshScroll()
-	{
-		GUIFunctions.setVScrollBarKnob((int) this.knobSize);
-		GUIFunctions.setHScrollBarKnob((int) this.knobSize);
-		
-        GUIFunctions.setVScrollBarPosit((int) viewCenter.getY());
-        GUIFunctions.setHScrollBarPosit((int) viewCenter.getX());
-        
-        GUIFunctions.setVScrollBarKnob((int) this.knobSize);
-		GUIFunctions.setHScrollBarKnob((int) this.knobSize);
-		
-		Drawing.instance().updateView();
+		if(!this.updating) //prevents refreshing view too many times
+			Drawing.instance().updateView();
 	}
 
 	@Override
@@ -417,7 +398,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	{
 		Point2D.Double pointCopy = (Double) point.clone();
 		AffineTransform transform = new AffineTransform();
-		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -viewCenter.getX() + 256*(1/zoom), -(-viewCenter.getY() + 256*(1/zoom)))); //t
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, viewCenter.getX() - 256*(1/zoom), viewCenter.getY() - 256*(1/zoom))); //t
         transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0));
         transform.transform(pointCopy, pointCopy); //transform pt to object coordinates
         return pointCopy;
@@ -429,5 +410,44 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		AffineTransform transform = object_world_view(s);
         transform.transform(pointCopy, pointCopy); //transform pt to object coordinates
         return pointCopy;
+	}
+	
+	private void handleZoom(double zoomChange)
+	{
+		double prevKnobSize = 512/zoom;
+		
+		//set zoom
+		zoom = zoom * zoomChange;
+		if(zoom < ZOOMMIN) zoom = ZOOMMIN;
+		if(zoom > ZOOMMAX) zoom = ZOOMMAX;
+
+		//set scroll bar size
+		this.knobSize = (int) (512/zoom);
+
+		//calculate the new top left of the view
+		Point2D.Double newTopLeft = new Point2D.Double(viewCenter.x - this.knobSize/2, viewCenter.y - this.knobSize/2);
+		if(newTopLeft.x < 0) newTopLeft.x = 0;
+		if(newTopLeft.y < 0) newTopLeft.y = 0;
+		if(newTopLeft.x + this.knobSize > 2048) newTopLeft.x = 2048 - this.knobSize;
+		if(newTopLeft.y + this.knobSize > 2048) newTopLeft.y = 2048 - this.knobSize;
+		
+		this.updating = true; //prevents refreshing view too many times
+		
+		//change scroll bar sizes and positions
+		if(prevKnobSize == 2048) //if we WERE fully zoomed out, we need to adjust the scroll bar size before moving scroll bars
+		{
+			GUIFunctions.setHScrollBarKnob((int) this.knobSize);
+			GUIFunctions.setVScrollBarKnob((int) this.knobSize);
+		}
+		GUIFunctions.setHScrollBarPosit((int) newTopLeft.x);
+		GUIFunctions.setVScrollBarPosit((int) newTopLeft.y);
+		GUIFunctions.setHScrollBarKnob((int) this.knobSize);
+		GUIFunctions.setVScrollBarKnob((int) this.knobSize);
+
+		//update view
+		GUIFunctions.setZoomText(zoom);
+		Drawing.instance().updateView();
+		
+		this.updating = false;
 	}
 }
