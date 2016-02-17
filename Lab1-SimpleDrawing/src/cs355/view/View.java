@@ -1,7 +1,10 @@
 package cs355.view;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -35,7 +38,11 @@ public class View implements ViewRefresher {
 			
 			g2d.setColor(shape.getColor()); //set color of shape we are going to draw
 			
-			g2d.setTransform(Controller.instance().object_world_view(shape)); //object->world->view
+			 //object->world->view
+			if(!shape.getShapeType().equals(Shape.type.LINE))
+			{
+				g2d.setTransform(Controller.instance().object_world_view(shape));
+			}
 			
 			switch (shape.getShapeType()) 
 			{
@@ -67,8 +74,6 @@ public class View implements ViewRefresher {
 			
 			g2d.setColor(Color.red);
 			
-			g2d.setTransform(Controller.instance().object_world_view(shape)); //object->world->view
-			
 			switch (shape.getShapeType()) 
 			{
 				case LINE:
@@ -85,7 +90,7 @@ public class View implements ViewRefresher {
 					break;
 				case SQUARE:
 					this.drawSquare(g2d, (Square)shape, true);
-					break;
+					break; 
 				case TRIANGLE:
 					this.drawTriangle(g2d, (Triangle)shape, true);
 					break;
@@ -103,8 +108,18 @@ public class View implements ViewRefresher {
 		
 		if(selected)
 		{
+			double zoom = Controller.instance().getZoom();
+			
+			//draw circle handle
+			g2d.setTransform(new AffineTransform()); //make sure sure no transforms are goin on
+			Point2D.Double point = new Point2D.Double(0, -(height/2) - (12/zoom));
+			point = Controller.instance().objectPoint_viewPoint(c, point);
+			g2d.drawOval((int)(point.getX()-6), (int)(point.getY()-6), 11, 11); //center
+			
+			//draw bounding box
+			g2d.setTransform(Controller.instance().object_world_view(c)); //object->world->view
+			g2d.setStroke(new BasicStroke((float) (1/zoom)));
 			g2d.drawRect(-width/2,-height/2,width,height);
-			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -119,8 +134,18 @@ public class View implements ViewRefresher {
 		
 		if(selected)
 		{
+			double zoom = Controller.instance().getZoom();
+			
+			//draw circle handle
+			g2d.setTransform(new AffineTransform()); //make sure sure no transforms are goin on
+			Point2D.Double point = new Point2D.Double(0, -(height/2) - (12/zoom));
+			point = Controller.instance().objectPoint_viewPoint(e, point);
+			g2d.drawOval((int)(point.getX()-6), (int)(point.getY()-6), 11, 11); //center
+			
+			//draw bounding box
+			g2d.setTransform(Controller.instance().object_world_view(e)); //object->world->view
+			g2d.setStroke(new BasicStroke((float) (1/zoom)));
 			g2d.drawRect(-width/2,-height/2,width,height);
-			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -130,22 +155,23 @@ public class View implements ViewRefresher {
 	
 	private void drawLine(Graphics2D g2d, Line l, boolean selected) 
 	{
-		int x1 = (int)l.getCenter().getX();
-		int y1 = (int)l.getCenter().getY();
-		int x2 = (int)l.getEnd().getX();
-		int y2 = (int)l.getEnd().getY();
+		g2d.setTransform(new AffineTransform()); //make sure sure no transforms are goin on
+		
+		Point2D.Double start = Controller.instance().worldPoint_viewPoint(l.getCenter());
+		Point2D.Double end = Controller.instance().worldPoint_viewPoint(l.getEnd());
+		int x1 = (int)start.getX();
+		int y1 = (int)start.getY();
+		int x2 = (int)end.getX();
+		int y2 = (int)end.getY();
 		
 		if(selected)
 		{
-//			double slope = (l.getCenter().getY()-l.getEnd().getY())/(l.getEnd().getX()-l.getCenter().getX());
-//			double tangentSlope = 1/slope;
-			
-			g2d.drawOval(-6, -6, 11, 11); //center
-			g2d.drawOval((x2-x1)-6, (y2-y1)-6, 11, 11); //end
+			g2d.drawOval(x1-6, y1-6, 11, 11); //center
+			g2d.drawOval(x2-6, y2-6, 11, 11); //end
 		}
 		else
 		{
-			g2d.drawLine(0, 0, x2-x1, y2-y1);
+			g2d.drawLine(x1, y1, x2, y2);
 		}
 	}
 	
@@ -156,8 +182,18 @@ public class View implements ViewRefresher {
 		
 		if(selected)
 		{
+			double zoom = Controller.instance().getZoom();
+			
+			//draw circle handle
+			g2d.setTransform(new AffineTransform()); //make sure sure no transforms are goin on
+			Point2D.Double point = new Point2D.Double(0, -(height/2) - (12/zoom));
+			point = Controller.instance().objectPoint_viewPoint(r, point);
+			g2d.drawOval((int)(point.getX()-6), (int)(point.getY()-6), 11, 11); //center
+			
+			//draw bounding box
+			g2d.setTransform(Controller.instance().object_world_view(r)); //object->world->view
+			g2d.setStroke(new BasicStroke((float) (1/zoom)));
 			g2d.drawRect(-width/2,-height/2,width,height);
-			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -172,8 +208,18 @@ public class View implements ViewRefresher {
 		
 		if(selected)
 		{
+			double zoom = Controller.instance().getZoom();
+			
+			//draw circle handle
+			g2d.setTransform(new AffineTransform()); //make sure sure no transforms are goin on
+			Point2D.Double point = new Point2D.Double(0, -(height/2) - (12/zoom));
+			point = Controller.instance().objectPoint_viewPoint(s, point);
+			g2d.drawOval((int)(point.getX()-6), (int)(point.getY()-6), 11, 11); //center
+			
+			//draw bounding box
+			g2d.setTransform(Controller.instance().object_world_view(s)); //object->world->view
+			g2d.setStroke(new BasicStroke((float) (1/zoom)));
 			g2d.drawRect(-width/2,-height/2,width,height);
-			g2d.drawOval(-6, -height/2 - 15, 11, 11);
 		}
 		else
 		{
@@ -196,19 +242,35 @@ public class View implements ViewRefresher {
 		
 		if(selected)
 		{
-			g2d.drawPolygon(xCoordinates, yCoordinates, 3);
+			double zoom = Controller.instance().getZoom();
+			
+			//draw circle handle
+			g2d.setTransform(new AffineTransform()); //make sure sure no transforms are goin on
+			Point2D.Double point = new Point2D.Double();
+			
 			if(ya <= yb && ya <= yc)
 			{
-				g2d.drawOval(xa-6, ya - 15, 11, 11);
+				point.x = xa;
+				point.y = ya - (12/zoom);
 			}
 			else if(yb <= ya && yb <= yc)
 			{
-				g2d.drawOval(xb-6, yb - 15, 11, 11);
+				point.x = xb;
+				point.y = yb - (12/zoom);
 			}
 			else if(yc <= yb && yc <= ya)
 			{
-				g2d.drawOval(xc-6, yc - 15, 11, 11);
+				point.x = xc;
+				point.y = yc - (12/zoom);
 			}
+			
+			point = Controller.instance().objectPoint_viewPoint(t, point);
+			g2d.drawOval((int)(point.getX()-6), (int)(point.getY()-6), 11, 11); //center
+			
+			//draw bounding box
+			g2d.setTransform(Controller.instance().object_world_view(t)); //object->world->view
+			g2d.setStroke(new BasicStroke((float) (1/zoom)));
+			g2d.drawPolygon(xCoordinates, yCoordinates, 3);
 		}
 		else
 		{

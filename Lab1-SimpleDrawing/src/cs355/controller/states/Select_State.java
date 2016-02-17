@@ -56,12 +56,12 @@ public class Select_State implements IControllerState {
 		{
 			if(Drawing.instance().getShape(this.currentShapeIndex).getShapeType().equals(Shape.type.LINE))
 			{
-				Point2D.Double point2 = Controller.instance().viewPoint_worldPoint(e);
-				x = (int) point2.getX();
-				y = (int) point2.getY();
 				Line l = (Line)Drawing.instance().getShape(currentShapeIndex);
-				double startDistance = Math.sqrt(Math.pow(l.getCenter().getX() - x, 2) + Math.pow(l.getCenter().getY() - y, 2));
-				double endDistance = Math.sqrt(Math.pow(l.getEnd().getX() - x, 2) + Math.pow(l.getEnd().getY() - y, 2));
+				Point2D.Double start = Controller.instance().worldPoint_viewPoint(l.getCenter());
+				Point2D.Double end = Controller.instance().worldPoint_viewPoint(l.getEnd());
+				
+				double startDistance = Math.sqrt(Math.pow(start.getX() - x, 2) + Math.pow(start.getY() - y, 2));
+				double endDistance = Math.sqrt(Math.pow(end.getX() - x, 2) + Math.pow(end.getY() - y, 2));
 				
 				if(6>=startDistance)
 				{
@@ -287,16 +287,12 @@ public class Select_State implements IControllerState {
 			AffineTransform viewToObj = Controller.instance().view_world_object(shape);
 			viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
 		}
-		else
-		{
-//			pointCopy = Controller.instance().viewPoint_worldPoint(pointCopy);
-		}
 		
 		return shape.pointInShape(pointCopy, TOLERANCE);
 	}
 	
 	
-	//checks if a mouse press occured in the rotation handle of the current selected shape
+	//checks if a mouse press occurred in the rotation handle of the current selected shape
 	private boolean mousePressedInRotationHandle(Point2D.Double point)
 	{
 		ArrayList<Shape> shapes = (ArrayList<Shape>)Drawing.instance().getShapes();
@@ -321,19 +317,19 @@ public class Select_State implements IControllerState {
 		}
 		if(height!=-1)
 		{
-			Point2D.Double pointCopy = (Double) point.clone();
-			AffineTransform viewToObj = Controller.instance().view_world_object(shape);
-			viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
-			double yDiff = pointCopy.getY()+((height/2) + 9);
+			Point2D.Double handleCenter = new Point2D.Double(0, -(height/2) - (12/Controller.instance().getZoom()));
+			handleCenter = Controller.instance().objectPoint_viewPoint(shape, handleCenter);
 			
-			double distance = Math.sqrt(Math.pow(pointCopy.getX(), 2) + Math.pow(yDiff, 2));
+			double xDiff = handleCenter.getX() - point.getX();
+			double yDiff = handleCenter.getY() - point.getY();
+			
+			double distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 			return (6>=distance);
 		}
 		if(shape.getShapeType().equals(Shape.type.TRIANGLE))
 		{
-			Point2D.Double pointCopy = (Double) point.clone();
-			AffineTransform viewToObj = Controller.instance().view_world_object(shape);
-			viewToObj.transform(pointCopy, pointCopy); //transform pt to object coordinates
+			double zoom = Controller.instance().getZoom();
+			Point2D.Double handleCenter = new Point2D.Double();
 			
 			Triangle t = (Triangle)shape;
 			double xa = t.getA().getX()-t.getCenter().getX();
@@ -344,20 +340,29 @@ public class Select_State implements IControllerState {
 			double yb = t.getB().getY()-t.getCenter().getY();
 			double yc = t.getC().getY()-t.getCenter().getY();
 			
-			double distance = 7;
 			if(ya <= yb && ya <= yc)
 			{
-				distance = Math.sqrt(Math.pow(xa-pointCopy.getX(), 2) + Math.pow(ya-pointCopy.getY()-9, 2));
+				handleCenter.x = xa;
+				handleCenter.y = ya - (12/zoom);
 			}
 			else if(yb <= ya && yb <= yc)
 			{
-				distance = Math.sqrt(Math.pow(xb-pointCopy.getX(), 2) + Math.pow(yb-pointCopy.getY()-9, 2));
+				handleCenter.x = xb;
+				handleCenter.y = yb - (12/zoom);
 			}
 			else if(yc <= yb && yc <= ya)
 			{
-				distance = Math.sqrt(Math.pow(xc-pointCopy.getX(), 2) + Math.pow(yc-pointCopy.getY()-9, 2));
+				handleCenter.x = xc;
+				handleCenter.y = yc - (12/zoom);
 			}
-			return (6>=distance); 
+			
+			handleCenter = Controller.instance().objectPoint_viewPoint(shape, handleCenter);
+			
+			double xDiff = handleCenter.getX() - point.getX();
+			double yDiff = handleCenter.getY() - point.getY();
+			
+			double distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+			return (6>=distance);
 		}
 		return false;
 	}

@@ -50,15 +50,17 @@ public class Line extends Shape {
 	@Override
 	public boolean pointInShape(Double pt, double tolerance)
 	{
-		pt = Controller.instance().viewPoint_worldPoint(pt);
+		Point2D.Double startPt = Controller.instance().worldPoint_viewPoint(this.getCenter());
+		Point2D.Double endPt = Controller.instance().worldPoint_viewPoint(this.getEnd());
+		
 		double x0 = pt.getX(); 
 		double y0 = pt.getY(); 
 		
-		double x1 = center.getX(); 
-		double y1 = center.getY();
+		double x1 = startPt.getX(); 
+		double y1 = startPt.getY();
 		
-		double x2 = end.getX(); 
-		double y2 = end.getY();
+		double x2 = endPt.getX(); 
+		double y2 = endPt.getY();
 		
 		double distance = Math.abs(((y2-y1)*x0) - ((x2-x1)*y0) + (x2*y1) - (y2*x1))/Math.sqrt(Math.pow(y2-y1, 2)+Math.pow(x2-x1, 2));
 

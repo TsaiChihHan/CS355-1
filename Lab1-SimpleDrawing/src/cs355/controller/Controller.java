@@ -412,6 +412,16 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
         return pointCopy;
 	}
 	
+	public Point2D.Double worldPoint_viewPoint(Point2D.Double point)
+	{
+		Point2D.Double pointCopy = (Double) point.clone();
+		AffineTransform transform = new AffineTransform();
+		transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0)); //scale
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -viewCenter.getX() + 256*(1/zoom), -viewCenter.getY() + 256*(1/zoom))); //t
+        transform.transform(pointCopy, pointCopy); //transform pt to object coordinates
+        return pointCopy;
+	}
+	
 	private void handleZoom(double zoomChange)
 	{
 		double prevKnobSize = 512/zoom;
