@@ -351,17 +351,13 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	{
 		AffineTransform transform = new AffineTransform();
 		
-        AffineTransform translation = new AffineTransform(1.0, 0, 0, 1.0, s.getCenter().getX(), s.getCenter().getY());
-        AffineTransform rotation = new AffineTransform(Math.cos(s.getRotation()), Math.sin(s.getRotation()), -Math.sin(s.getRotation()), Math.cos(s.getRotation()), 0, 0);
-
-
-		// World to View
-        transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0)); //scale
+		// world to view
+        transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0)); //s
 		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -viewCenter.getX() + 256*(1/zoom), -viewCenter.getY() + 256*(1/zoom))); //t
 
-		// Object to World
-		transform.concatenate(translation);
-		transform.concatenate(rotation);
+		// object to world
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, s.getCenter().getX(), s.getCenter().getY())); //t
+		transform.concatenate(new AffineTransform(Math.cos(s.getRotation()), Math.sin(s.getRotation()), -Math.sin(s.getRotation()), Math.cos(s.getRotation()), 0, 0)); //r
 		
 		return transform;
 	}
@@ -369,28 +365,21 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public AffineTransform view_world_object(Shape s)
 	{
 		AffineTransform transform = new AffineTransform();
+
+		// world to object
+		transform.concatenate(new AffineTransform(Math.cos(s.getRotation()), -Math.sin(s.getRotation()), Math.sin(s.getRotation()), Math.cos(s.getRotation()), 0.0, 0.0)); //r
+		transform.concatenate(new AffineTransform(1.0, 0.0, 0.0, 1.0, -s.getCenter().getX(), -s.getCenter().getY())); //t
 		
-        AffineTransform translation = new AffineTransform(1.0, 0.0, 0.0, 1.0, -s.getCenter().getX(), -s.getCenter().getY());
-
-        AffineTransform rotation = new AffineTransform(Math.cos(s.getRotation()), -Math.sin(s.getRotation()), Math.sin(s.getRotation()), Math.cos(s.getRotation()), 0.0, 0.0);
-
-
-		// World to object
-		transform.concatenate(rotation);
-		transform.concatenate(translation);
-		
-		// View to world
+		// view to world
         transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -(-viewCenter.getX() + 256*(1/zoom)), -(-viewCenter.getY() + 256*(1/zoom)))); //t
-        transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0)); //scale
+        transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0)); //s
 		
 		return transform;
 	}
 	
 	public Point2D.Double viewPoint_worldPoint(MouseEvent e)
 	{
-		int x = e.getX();
-		int y = e.getY();
-		Point2D.Double point = new Point2D.Double((double)x, (double)y);
+		Point2D.Double point = new Point2D.Double(e.getX(), e.getY());
 		return viewPoint_worldPoint(point);
 	}
 	
@@ -399,7 +388,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		Point2D.Double pointCopy = (Double) point.clone();
 		AffineTransform transform = new AffineTransform();
 		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, viewCenter.getX() - 256*(1/zoom), viewCenter.getY() - 256*(1/zoom))); //t
-        transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0));
+        transform.concatenate(new AffineTransform(1/zoom, 0, 0, 1/zoom, 0, 0)); //s
         transform.transform(pointCopy, pointCopy); //transform pt to object coordinates
         return pointCopy;
 	}
@@ -416,7 +405,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	{
 		Point2D.Double pointCopy = (Double) point.clone();
 		AffineTransform transform = new AffineTransform();
-		transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0)); //scale
+		transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0)); //s
 		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -viewCenter.getX() + 256*(1/zoom), -viewCenter.getY() + 256*(1/zoom))); //t
         transform.transform(pointCopy, pointCopy); //transform pt to object coordinates
         return pointCopy;
