@@ -59,10 +59,15 @@ public class StudentLWJGLController implements CS355LWJGLController {
 	// This method is called to "resize" the viewport to match the screen.
 	// When you first start, have it be in perspective mode.
 	@Override
-	public void resizeGL()
+	public void resizeGL() //called only once when program starts
 	{
 		this.projection = projectionType.PERSPECTIVE;
-		glViewport(0, 0, LWJGLSandbox.DISPLAY_WIDTH, LWJGLSandbox.DISPLAY_HEIGHT);
+		glViewport(0, 0, LWJGLSandbox.DISPLAY_WIDTH, LWJGLSandbox.DISPLAY_HEIGHT); //setup viewport
+		
+		//setup projection matrix
+		glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        
 		moveHome();
 	}
 
@@ -118,11 +123,11 @@ public class StudentLWJGLController implements CS355LWJGLController {
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_O))
 		{
-			this.projection = projection.ORTHOGRAPHIC;
+			this.projection = projectionType.ORTHOGRAPHIC;
 		}
 		else if (Keyboard.isKeyDown(Keyboard.KEY_P))
 		{
-			this.projection = projection.PERSPECTIVE;
+			this.projection = projectionType.PERSPECTIVE;
 		}
 	}
 
@@ -132,9 +137,10 @@ public class StudentLWJGLController implements CS355LWJGLController {
 	{
 		//Clear Screen
 		glClear(GL_COLOR_BUFFER_BIT);
+		
 		glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-		
+        
         switch(this.projection)
         {
         	case PERSPECTIVE:
@@ -156,16 +162,42 @@ public class StudentLWJGLController implements CS355LWJGLController {
 	
 	/***********************************************************************************************************/
 	
+	/*
+	 * Draws the house model
+	 */
 	private void draw()
 	{
-		glBegin(GL_LINES);
-		Iterator<Line3D> i = model.getLines();
-		while (i.hasNext()) {
-			Line3D line = i.next();
-			glVertex3d(line.start.x, line.start.y, line.start.z);
-			glVertex3d(line.end.x, line.end.y, line.end.z);
-		}
-		glEnd();
+		
+//		glPushMatrix();
+//		glColor3f(100, 100, 100);
+//		glTranslatef(10, 0,0);
+//		glPushMatrix();
+//		glColor3f(10, 100, 10);
+//		glTranslatef(10, 10,0);
+//		glPushMatrix();
+//		glColor3f(200, 10, 200);
+//		glTranslatef(10, 10,10);
+//		
+//		for(int j=0;j<3;j++)
+//		{   
+//			glTranslatef(j*10, 0,0);
+//			
+			glBegin(GL_LINES);
+			Iterator<Line3D> i = model.getLines();
+			int count = 1;
+			while (i.hasNext())
+			{
+				Line3D line = i.next();
+				glVertex3d(line.start.x, line.start.y, line.start.z);
+				glColor3f(0, (float)Math.pow(2.0f,4*count)*0.6f, (float)Math.pow(count,3*count)*0.9f);
+				glVertex3d(line.end.x, line.end.y, line.end.z);
+				glColor3f(9*count*0.8f, (float)Math.pow(count,3)*0.5f, (float)Math.pow(2.0f,count)*0.7f);
+				count++;
+			}
+//			glPopMatrix();
+			glEnd();
+//		}
+		
 	}
 	
 	/***********************************************************************************************************/
