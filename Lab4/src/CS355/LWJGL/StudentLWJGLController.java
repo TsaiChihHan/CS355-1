@@ -9,7 +9,6 @@ package CS355.LWJGL;
 //If it doesn't appear in this list, you probably don't.
 //Of course, your milage may vary. Don't feel restricted by this list of imports.
 import java.util.Iterator;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -24,6 +23,7 @@ import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glPushMatrix;
+import static org.lwjgl.opengl.GL11.glPopMatrix;
 import static org.lwjgl.opengl.GL11.glRotatef;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 import static org.lwjgl.opengl.GL11.glVertex3d;
@@ -144,10 +144,10 @@ public class StudentLWJGLController implements CS355LWJGLController {
         switch(this.projection)
         {
         	case PERSPECTIVE:
-        		gluPerspective(60.0f, (float) LWJGLSandbox.DISPLAY_WIDTH / LWJGLSandbox.DISPLAY_HEIGHT, 1.0f, 100.0f);
+        		gluPerspective(48.0f, (float) LWJGLSandbox.DISPLAY_WIDTH / LWJGLSandbox.DISPLAY_HEIGHT, 1.0f, 300.0f);
         		break;
         	case ORTHOGRAPHIC:
-        		glOrtho(-6.0f, 6.0f, -6.0f, 6.0f, 1.0f, 100.0f);
+        		glOrtho(-24.0f, 24.0f, -24.0f, 24.0f, 1.0f, 300.0f);
         		break;
         }
         
@@ -157,7 +157,7 @@ public class StudentLWJGLController implements CS355LWJGLController {
         glRotatef(yaw, 0.0f, 1.0f, 0.0f);
         glTranslatef(position.x, position.y, position.z);
         
-        this.draw();
+        this.drawNeighborhood();
 	}
 	
 	/***********************************************************************************************************/
@@ -165,38 +165,41 @@ public class StudentLWJGLController implements CS355LWJGLController {
 	/*
 	 * Draws the house model
 	 */
-	private void draw()
+	private void drawHouse()
 	{
-		
-//		glPushMatrix();
-//		glColor3f(100, 100, 100);
-//		glTranslatef(10, 0,0);
-//		glPushMatrix();
-//		glColor3f(10, 100, 10);
-//		glTranslatef(10, 10,0);
-//		glPushMatrix();
-//		glColor3f(200, 10, 200);
-//		glTranslatef(10, 10,10);
-//		
-//		for(int j=0;j<3;j++)
-//		{   
-//			glTranslatef(j*10, 0,0);
-//			
-			glBegin(GL_LINES);
-			Iterator<Line3D> i = model.getLines();
-			int count = 1;
-			while (i.hasNext())
+		glBegin(GL_LINES);
+		Iterator<Line3D> i = model.getLines();
+		while (i.hasNext())
+		{
+			Line3D line = i.next();
+			glVertex3d(line.start.x, line.start.y, line.start.z);
+			glVertex3d(line.end.x, line.end.y, line.end.z);
+		}
+		glEnd();
+	}
+	
+	/*
+	 * Draws the whole darn neighborhood
+	 */
+	private void drawNeighborhood()
+	{	
+		for(float z=0.0f;z<10.0f;z+=1.0f)
+		{
+			for(float x=-1.0f;x<=1.0f;x+=2.0f)
 			{
-				Line3D line = i.next();
-				glVertex3d(line.start.x, line.start.y, line.start.z);
-				glColor3f(0, (float)Math.pow(2.0f,4*count)*0.6f, (float)Math.pow(count,3*count)*0.9f);
-				glVertex3d(line.end.x, line.end.y, line.end.z);
-				glColor3f(9*count*0.8f, (float)Math.pow(count,3)*0.5f, (float)Math.pow(2.0f,count)*0.7f);
-				count++;
+				float rotation = (x==1)? 270.0f : 90.0f;
+				float r = 1.0f - (( z + 1.0f ) * 0.1f);
+				float g = 0.5f - ( x * 0.25f );
+				float b = (( z + 1.0f ) * 0.1f);
+				
+				glPushMatrix();
+				glColor3f(r,g,b);
+				glTranslatef(x*15,0,z*-15);
+				glRotatef(rotation, 0.0f, 1.0f, 0.0f);
+				this.drawHouse();
+				glPopMatrix();
 			}
-//			glPopMatrix();
-			glEnd();
-//		}
+		}
 		
 	}
 	
