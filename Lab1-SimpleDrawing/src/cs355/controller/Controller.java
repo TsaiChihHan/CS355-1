@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import cs355.GUIFunctions;
+import cs355.controller.states.Camera_State;
 import cs355.controller.states.Drawing_State;
 import cs355.controller.states.IControllerState;
 import cs355.controller.states.Nothing_State;
@@ -33,6 +34,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public static final double ZOOMOUT = .5;
 	public static final double ZOOMMIN = .25;
 	public static final double ZOOMMAX = 4.0;
+	public boolean ThreeD = false;
 	
 	public static Controller instance()
 	{
@@ -177,20 +179,19 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void openScene(File file)
 	{
-		// TODO Auto-generated method stub
+//		CS355Scene.open(file);
 	}
 
 	@Override
 	public void toggle3DModelDisplay()
 	{
-		// TODO Auto-generated method stub
-
+		this.state = new Camera_State();
 	}
 
 	@Override
 	public void keyPressed(Iterator<Integer> iterator)
 	{
-		// TODO Auto-generated method stub
+		state.keyPressed(iterator);
 	}
 
 	@Override

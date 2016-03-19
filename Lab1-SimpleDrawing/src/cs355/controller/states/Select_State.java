@@ -6,6 +6,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import cs355.controller.Controller;
 import cs355.model.drawing.Circle;
@@ -152,6 +153,12 @@ public class Select_State implements IControllerState {
 			this.moveShape(this.mouseDragStart, e);
 			this.mouseDragStart = new Point2D.Double((double)e.getX(), (double)e.getY());
 		}
+	}
+	
+	@Override
+	public void keyPressed(Iterator<Integer> iterator)
+	{
+		
 	}
 	
 	@Override

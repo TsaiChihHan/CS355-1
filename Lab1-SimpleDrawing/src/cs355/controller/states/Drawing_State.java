@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import cs355.controller.Controller;
 import cs355.model.drawing.Circle;
@@ -132,6 +133,12 @@ public class Drawing_State implements IControllerState {
 			}
 			Drawing.instance().updateView();
 		}
+	}
+	
+	@Override
+	public void keyPressed(Iterator<Integer> iterator)
+	{
+		
 	}
 
 	@Override

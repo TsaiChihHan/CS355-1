@@ -1,11 +1,12 @@
 package cs355.controller.states;
 
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
 
 public interface IControllerState {
 	
 	public enum stateType{
-		NOTHING, DRAWING, SELECT
+		NOTHING, DRAWING, SELECT, CAMERA
 	}
 
 	public void mouseClicked(MouseEvent e);
@@ -15,6 +16,8 @@ public interface IControllerState {
 	public void mouseReleased(MouseEvent e);
 	
 	public void mouseDragged(MouseEvent e);
+	
+	public void keyPressed(Iterator<Integer> iterator);
 	
 	public stateType getType();
 

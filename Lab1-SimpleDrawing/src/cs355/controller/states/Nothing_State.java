@@ -1,6 +1,7 @@
 package cs355.controller.states;
 
 import java.awt.event.MouseEvent;
+import java.util.Iterator;
 
 public class Nothing_State implements IControllerState {
 
@@ -35,6 +36,12 @@ public class Nothing_State implements IControllerState {
 	{
 		// TODO Auto-generated method stub
 
+	}
+	
+	@Override
+	public void keyPressed(Iterator<Integer> iterator)
+	{
+		
 	}
 
 	@Override
