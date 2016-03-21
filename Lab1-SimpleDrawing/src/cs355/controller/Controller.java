@@ -55,6 +55,10 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		this.zoom = 1.0;
 		this.knobSize = 512;
 		this.viewCenter = new Point2D.Double(0,0);
+		CS355Scene.instance().camPos.x = 28;
+		CS355Scene.instance().camPos.y = -25;
+		CS355Scene.instance().camPos.z = -64;
+		CS355Scene.instance().camRot = 0.0f;
 	}
 
 	@Override
