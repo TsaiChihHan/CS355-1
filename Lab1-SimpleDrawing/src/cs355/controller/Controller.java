@@ -17,6 +17,8 @@ import cs355.controller.states.IControllerState;
 import cs355.controller.states.Nothing_State;
 import cs355.controller.states.Select_State;
 import cs355.model.drawing.*;
+import cs355.model.scene.CS355Scene;
+import cs355.model.scene.Point3D;
 import cs355.view.View;
 import cs355.view.ViewRefresher;
 
@@ -35,6 +37,9 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public static final double ZOOMMIN = .25;
 	public static final double ZOOMMAX = 4.0;
 	public boolean ThreeD = false;
+	public CS355Scene scene;
+	private static final float nearPlane = 1.0f;
+	private static final float farPlane = 1000.0f;
 	
 	public static Controller instance()
 	{
@@ -179,19 +184,22 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void openScene(File file)
 	{
-//		CS355Scene.open(file);
+		this.scene.open(file);
+		this.state = new Camera_State();
 	}
 
 	@Override
 	public void toggle3DModelDisplay()
 	{
 		this.state = new Camera_State();
+		Drawing.instance().updateView();
 	}
 
 	@Override
 	public void keyPressed(Iterator<Integer> iterator)
 	{
 		state.keyPressed(iterator);
+		Drawing.instance().updateView();
 	}
 
 	@Override
@@ -412,6 +420,14 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
         return pointCopy;
 	}
 	
+	public AffineTransform world_view()
+	{
+		AffineTransform transform = new AffineTransform();
+        transform.concatenate(new AffineTransform(zoom, 0, 0, zoom, 0, 0));
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, -viewCenter.getX() + 256*(1/zoom), -viewCenter.getY() + 256*(1/zoom)));
+		return transform;
+	}
+	
 	private void handleZoom(double zoomChange)
 	{
 		double prevKnobSize = 512/zoom;
@@ -449,5 +465,60 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		Drawing.instance().updateView();
 		
 		this.updating = false;
+	}
+	
+	public double[] threeDWorldToClip(Point3D point)
+	{
+		float theta = ((Camera_State)this.state).yaw;
+		double c_x = ((Camera_State)this.state).position.x;
+		double c_y = ((Camera_State)this.state).position.y;
+		double c_z = ((Camera_State)this.state).position.z;
+		double e = (farPlane + nearPlane) / (farPlane - nearPlane);
+		double f = (-2 * nearPlane * farPlane) / (farPlane - nearPlane);
+
+		double x = (Math.sqrt(3) * point.x * Math.cos(theta) + Math.sqrt(3) * point.z * Math.sin(theta) + Math.sqrt(3) * (-c_x * Math.cos(theta) - c_z * Math.sin(theta)));
+		double y = (Math.sqrt(3) * point.y - Math.sqrt(3) * c_y);
+		double z = (f + e * point.z * Math.cos(theta) - e * x * Math.sin(theta) + e * (c_x * Math.sin(theta) - c_z * Math.cos(theta)));
+		double bigW = (-c_z * Math.cos(theta) + point.z * Math.cos(theta) + c_x * Math.sin(theta) - point.x * Math.sin(theta));
+
+		double[] result = {x, y, z, bigW};
+
+		return result;
+	}
+
+	public Point3D clipToScreen(Point3D point)
+	{
+		
+		double x = 1024 + (1024 * point.x);
+		double y = 1024 - (1024 * point.y);
+		return new Point3D(x, y, 1);
+	}
+
+	public boolean clipTest(double[] start, double[] end)
+	{
+		double startX = start[0];
+		double startY = start[1];
+		double startZ = start[2];
+		double startW = start[3];
+
+		double endX = end[0];
+		double endY = end[1];
+		double endZ = end[2];
+		double endW = end[3];
+
+		if ((startX > startW && endX > endW) || (startX < -startW && endX < -endW)) return true;
+
+		if ((startY > startW && endY > endW) || (startY < -startW && endY < -endW)) return true;
+
+		if ((startZ > startW && endZ > endW)) return true;
+
+		if (startZ <= -startW || endZ <= -endW) return true;
+
+		return false;
+	}
+
+	public IControllerState getState()
+	{
+		return this.state;
 	}
 }

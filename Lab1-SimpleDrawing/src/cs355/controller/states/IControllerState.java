@@ -3,7 +3,7 @@ package cs355.controller.states;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 
-public interface IControllerState {
+public abstract interface IControllerState {
 	
 	public enum stateType{
 		NOTHING, DRAWING, SELECT, CAMERA

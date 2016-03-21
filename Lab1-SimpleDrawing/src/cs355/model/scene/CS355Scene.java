@@ -6,25 +6,36 @@ import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  * The Scene that you will render as a 3D overlay.
  * @author gavin
  */
 public class CS355Scene extends Observable {
+	
+	public static CS355Scene _instance;
+	
+	public static CS355Scene instance()
+	{
+		if (_instance == null) 
+			_instance = new CS355Scene();
+		return _instance;
+	}
 
 	// The list of Instances.
-	private ArrayList<Instance> insts;
+	public ArrayList<Instance> insts;
 
 	// The default camera items.
-	private Point3D camPos;
-	private double camRot;
+	public Point3D camPos;
+	public double camRot;
 
 	/**
 	 * Creates an empty Scene with no Instances.
 	 */
-	public CS355Scene() {
+	private CS355Scene() {
+		camPos =new Point3D(0.0d, 0.0d, 20.0d);
 		insts = new ArrayList<>();
-		camPos = new Point3D();
+//		camPos = new Point3D();
 		camRot = 0.0;
 	}
 
@@ -117,5 +128,10 @@ public class CS355Scene extends Observable {
 		}
 
 		return rot;
+	}
+	
+	public ArrayList<Instance> getInstances()
+	{
+		return insts;
 	}
 }

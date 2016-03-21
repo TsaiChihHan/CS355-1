@@ -6,13 +6,41 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 
 import cs355.GUIFunctions;
 import cs355.controller.Controller;
+import cs355.controller.states.IControllerState;
 import cs355.model.drawing.*;
+import cs355.model.scene.HouseModel;
+import cs355.model.scene.Line3D;
+import cs355.model.scene.Point3D;
 
 public class View implements ViewRefresher {
+	
+	private void render3D(Graphics2D g2d)
+	{
+		HouseModel house = new HouseModel();
+		List<Line3D> list = house.getLines();
+		
+		Color houseColor = Color.GREEN;
+		g2d.setColor(houseColor);
+		
+		g2d.setTransform(Controller.instance().world_view());
+		
+		for(Line3D l : list) {
+			double[] startCoord = Controller.instance().threeDWorldToClip(l.start);
+			double[] endCoord = Controller.instance().threeDWorldToClip(l.end);
+			
+			if (!Controller.instance().clipTest(startCoord, endCoord))
+			{
+				Point3D start = Controller.instance().clipToScreen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
+				Point3D end = Controller.instance().clipToScreen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
+				g2d.drawLine((int) Math.round(start.x), (int) Math.round(start.y), (int) Math.round(end.x), (int) Math.round(end.y));
+			}
+		}
+	}
 
 	public View()
 	{
@@ -97,6 +125,13 @@ public class View implements ViewRefresher {
 				default:
 					break;
 			}
+		}
+		
+		
+		
+		if(Controller.instance().getState().getType().equals(IControllerState.stateType.CAMERA))
+		{
+			this.render3D(g2d);
 		}
 	}
 	

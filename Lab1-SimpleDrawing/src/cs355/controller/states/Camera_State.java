@@ -8,14 +8,15 @@ import cs355.model.scene.Point3D;
 
 public class Camera_State implements IControllerState {
 	
-	private Point3D position;
-	private float yaw;
+	public Point3D position;
+	public float yaw;
 	private static final float UNIT = 1.0f;
 
 	public Camera_State()
 	{
 		this.position = new Point3D(0.0d, 0.0d, 0.0d);
 		this.yaw = 0.0f;
+		this.moveHome();
 	}
 	
 	public Camera_State(Point3D position)
@@ -54,7 +55,6 @@ public class Camera_State implements IControllerState {
 	@Override
 	public void keyPressed(Iterator<Integer> iterator)
 	{
-		System.out.println("key-press");
 		while(iterator.hasNext())
 		{
 			switch(iterator.next())
@@ -101,14 +101,14 @@ public class Camera_State implements IControllerState {
 	
 	private void moveLeft()
 	{
-		position.x -= UNIT * (float)Math.sin(Math.toRadians(yaw-90));
-	    position.z += UNIT * (float)Math.cos(Math.toRadians(yaw-90));
+		position.x += UNIT * (float)Math.sin(Math.toRadians(yaw-90));
+	    position.z -= UNIT * (float)Math.cos(Math.toRadians(yaw-90));
 	}
 	
 	private void moveRight()
 	{
-		position.x -= UNIT * (float)Math.sin(Math.toRadians(yaw+90));
-	    position.z += UNIT * (float)Math.cos(Math.toRadians(yaw+90));
+		position.x += UNIT * (float)Math.sin(Math.toRadians(yaw+90));
+	    position.z -= UNIT * (float)Math.cos(Math.toRadians(yaw+90));
 	}
 	
 	private void moveForward()
@@ -125,22 +125,22 @@ public class Camera_State implements IControllerState {
 	
 	private void turnLeft()
 	{
-		yaw -= UNIT;
+		yaw += UNIT/8;
 	}
 	
 	private void turnRight()
 	{
-		yaw += UNIT;
+		yaw -= UNIT/8;
 	}
 	
 	private void moveUp()
 	{
-		position.y -= UNIT;
+		position.y += UNIT;
 	}
 	
 	private void moveDown()
 	{
-		position.y += UNIT;
+		position.y -= UNIT;
 	}
 	
 	private void moveHome()

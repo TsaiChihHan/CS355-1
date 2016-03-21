@@ -42,7 +42,7 @@ public class SceneParser {
 	public CS355Scene parse() throws Exception {
 
 		// Build the scene and needed lists.
-		CS355Scene scene = new CS355Scene();
+		CS355Scene scene = CS355Scene.instance();
 		ArrayList<InstParse> pairs = new ArrayList<>();
 		ArrayList<WireFrame> models = new ArrayList<>();
 
