@@ -480,26 +480,26 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		this.updating = false;
 	}
 	
-	public double[] threeDWorldToClip(Point3D point)
+	public double[] camera_clip(Point3D point)
 	{
 		float theta = (float) CS355Scene.instance().getCameraRotation();
-		double c_x = CS355Scene.instance().getCameraPosition().x;
-		double c_y = CS355Scene.instance().getCameraPosition().y;
-		double c_z = CS355Scene.instance().getCameraPosition().z;
+		double cameraX = CS355Scene.instance().getCameraPosition().x;
+		double cameraY = CS355Scene.instance().getCameraPosition().y;
+		double cameraZ = CS355Scene.instance().getCameraPosition().z;
 		double e = (farPlane + nearPlane) / (farPlane - nearPlane);
 		double f = (-2 * nearPlane * farPlane) / (farPlane - nearPlane);
 
-		double x = (Math.sqrt(3) * point.x * Math.cos(theta) + Math.sqrt(3) * point.z * Math.sin(theta) + Math.sqrt(3) * (-c_x * Math.cos(theta) - c_z * Math.sin(theta)));
-		double y = (Math.sqrt(3) * point.y - Math.sqrt(3) * c_y);
-		double z = (f + e * point.z * Math.cos(theta) - e * x * Math.sin(theta) + e * (c_x * Math.sin(theta) - c_z * Math.cos(theta)));
-		double bigW = (-c_z * Math.cos(theta) + point.z * Math.cos(theta) + c_x * Math.sin(theta) - point.x * Math.sin(theta));
+		double x = (Math.sqrt(3) * point.x * Math.cos(theta) + Math.sqrt(3) * point.z * Math.sin(theta) + Math.sqrt(3) * (-cameraX * Math.cos(theta) - cameraZ * Math.sin(theta)));
+		double y = (Math.sqrt(3) * point.y - Math.sqrt(3) * cameraY);
+		double z = (f + e * point.z * Math.cos(theta) - e * x * Math.sin(theta) + e * (cameraX * Math.sin(theta) - cameraZ * Math.cos(theta)));
+		double bigW = (-cameraZ * Math.cos(theta) + point.z * Math.cos(theta) + cameraX * Math.sin(theta) - point.x * Math.sin(theta));
 
 		double[] result = {x, y, z, bigW};
 
 		return result;
 	}
 
-	public Point3D clipToScreen(Point3D point)
+	public Point3D clip_screen(Point3D point)
 	{
 		
 		double x = 1024 + (1024 * point.x);

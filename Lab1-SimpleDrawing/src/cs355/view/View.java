@@ -33,13 +33,13 @@ public class View implements ViewRefresher {
 			g2d.setColor(instance.getColor());
 			List<Line3D> list = instance.getModel().getLines();
 			for(Line3D l : list) {
-				double[] startCoord = Controller.instance().threeDWorldToClip(l.start);
-				double[] endCoord = Controller.instance().threeDWorldToClip(l.end);
+				double[] startCoord = Controller.instance().camera_clip(l.start);
+				double[] endCoord = Controller.instance().camera_clip(l.end);
 				
 				if (!Controller.instance().clipTest(startCoord, endCoord))
 				{
-					Point3D start = Controller.instance().clipToScreen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
-					Point3D end = Controller.instance().clipToScreen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
+					Point3D start = Controller.instance().clip_screen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
+					Point3D end = Controller.instance().clip_screen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
 					g2d.drawLine((int) Math.round(start.x), (int) Math.round(start.y), (int) Math.round(end.x), (int) Math.round(end.y));
 				}
 			}
@@ -55,13 +55,13 @@ public class View implements ViewRefresher {
 			
 			for(Line3D l : list)
 			{
-				double[] startCoord = Controller.instance().threeDWorldToClip(l.start);
-				double[] endCoord = Controller.instance().threeDWorldToClip(l.end);
+				double[] startCoord = Controller.instance().camera_clip(l.start);
+				double[] endCoord = Controller.instance().camera_clip(l.end);
 				
 				if (!Controller.instance().clipTest(startCoord, endCoord))
 				{
-					Point3D start = Controller.instance().clipToScreen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
-					Point3D end = Controller.instance().clipToScreen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
+					Point3D start = Controller.instance().clip_screen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
+					Point3D end = Controller.instance().clip_screen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
 					g2d.drawLine((int) Math.round(start.x), (int) Math.round(start.y), (int) Math.round(end.x), (int) Math.round(end.y));
 				}
 			}
