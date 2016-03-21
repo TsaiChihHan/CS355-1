@@ -4,25 +4,17 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Iterator;
 
-import cs355.model.scene.Point3D;
+import cs355.model.scene.CS355Scene;
 
 public class Camera_State implements IControllerState {
 	
-	public Point3D position;
-	public float yaw;
 	private static final float UNIT = 1.0f;
 
 	public Camera_State()
 	{
-		this.position = new Point3D(0.0d, 0.0d, 0.0d);
-		this.yaw = 0.0f;
-		this.moveHome();
-	}
-	
-	public Camera_State(Point3D position)
-	{
-		this.position = position;
-		this.yaw = 0.0f;
+//		CS355.position = new Point3D(0.0d, 0.0d, 0.0d);
+//		this.yaw = 0.0f;
+//		this.moveHome();
 	}
 
 	@Override
@@ -101,54 +93,54 @@ public class Camera_State implements IControllerState {
 	
 	private void moveLeft()
 	{
-		position.x += UNIT * (float)Math.sin(Math.toRadians(yaw-90));
-	    position.z -= UNIT * (float)Math.cos(Math.toRadians(yaw-90));
+		CS355Scene.instance().camPos.x += UNIT * (float)Math.sin(Math.toRadians(CS355Scene.instance().camRot-90));
+	    CS355Scene.instance().camPos.z -= UNIT * (float)Math.cos(Math.toRadians(CS355Scene.instance().camRot-90));
 	}
 	
 	private void moveRight()
 	{
-		position.x += UNIT * (float)Math.sin(Math.toRadians(yaw+90));
-	    position.z -= UNIT * (float)Math.cos(Math.toRadians(yaw+90));
+		CS355Scene.instance().camPos.x += UNIT * (float)Math.sin(Math.toRadians(CS355Scene.instance().camRot+90));
+	    CS355Scene.instance().camPos.z -= UNIT * (float)Math.cos(Math.toRadians(CS355Scene.instance().camRot+90));
 	}
 	
 	private void moveForward()
 	{
-		position.x -= UNIT * (float)Math.sin(Math.toRadians(yaw));
-	    position.z += UNIT * (float)Math.cos(Math.toRadians(yaw));
+		CS355Scene.instance().camPos.x -= UNIT * (float)Math.sin(Math.toRadians(CS355Scene.instance().camRot));
+	    CS355Scene.instance().camPos.z += UNIT * (float)Math.cos(Math.toRadians(CS355Scene.instance().camRot));
 	}
 	
 	private void moveBackward()
 	{
-		position.x += UNIT * (float)Math.sin(Math.toRadians(yaw));
-	    position.z -= UNIT * (float)Math.cos(Math.toRadians(yaw));
+		CS355Scene.instance().camPos.x += UNIT * (float)Math.sin(Math.toRadians(CS355Scene.instance().camRot));
+	    CS355Scene.instance().camPos.z -= UNIT * (float)Math.cos(Math.toRadians(CS355Scene.instance().camRot));
 	}
 	
 	private void turnLeft()
 	{
-		yaw += UNIT/8;
+		CS355Scene.instance().camRot += UNIT/8;
 	}
 	
 	private void turnRight()
 	{
-		yaw -= UNIT/8;
+		CS355Scene.instance().camRot -= UNIT/8;
 	}
 	
 	private void moveUp()
 	{
-		position.y += UNIT;
+		CS355Scene.instance().camPos.y += UNIT;
 	}
 	
 	private void moveDown()
 	{
-		position.y -= UNIT;
+		CS355Scene.instance().camPos.y -= UNIT;
 	}
 	
 	private void moveHome()
 	{
-		position.x = 0;
-		position.y = -1.5f;
-		position.z = -20;
-		yaw = 0.0f;
+		CS355Scene.instance().camPos.x = 0;
+		CS355Scene.instance().camPos.y = 3;
+		CS355Scene.instance().camPos.z = -10;
+		CS355Scene.instance().camRot = 0.0f;
 	}
 
 }

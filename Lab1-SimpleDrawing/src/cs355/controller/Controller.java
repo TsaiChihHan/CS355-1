@@ -184,14 +184,23 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void openScene(File file)
 	{
-		this.scene.open(file);
+		CS355Scene.instance().open(file);
 		this.state = new Camera_State();
 	}
 
 	@Override
 	public void toggle3DModelDisplay()
 	{
-		this.state = new Camera_State();
+		if(!ThreeD)
+		{
+			ThreeD=!ThreeD;
+			this.state = new Camera_State();
+		}
+		else
+		{
+			ThreeD=!ThreeD;
+			this.state = new Nothing_State();
+		}
 		Drawing.instance().updateView();
 	}
 
@@ -469,10 +478,10 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	
 	public double[] threeDWorldToClip(Point3D point)
 	{
-		float theta = ((Camera_State)this.state).yaw;
-		double c_x = ((Camera_State)this.state).position.x;
-		double c_y = ((Camera_State)this.state).position.y;
-		double c_z = ((Camera_State)this.state).position.z;
+		float theta = (float) CS355Scene.instance().getCameraRotation();
+		double c_x = CS355Scene.instance().getCameraPosition().x;
+		double c_y = CS355Scene.instance().getCameraPosition().y;
+		double c_z = CS355Scene.instance().getCameraPosition().z;
 		double e = (farPlane + nearPlane) / (farPlane - nearPlane);
 		double f = (-2 * nearPlane * farPlane) / (farPlane - nearPlane);
 
