@@ -30,11 +30,28 @@ public class View implements ViewRefresher {
 		
 		for(Instance instance : instances)
 		{
+//			g2d.setTransform(Controller.instance().objectToView3D(instance));
 			g2d.setColor(instance.getColor());
 			List<Line3D> list = instance.getModel().getLines();
+			
 			for(Line3D l : list) {
-				double[] startCoord = Controller.instance().camera_clip(l.start);
-				double[] endCoord = Controller.instance().camera_clip(l.end);
+				
+//				l.start.x += instance.getPosition().x;
+//				l.start.y += instance.getPosition().y;
+//				l.start.z += instance.getPosition().z;
+//				l.end.x += instance.getPosition().x;
+//				l.end.y += instance.getPosition().y;
+//				l.end.z += instance.getPosition().z;
+				
+				double[] startCoord = Controller.instance().camera_clip(l.start, instance);
+				double[] endCoord = Controller.instance().camera_clip(l.end, instance);
+				
+//				startCoord[0] += instance.getPosition().x;
+//				startCoord[1] += instance.getPosition().y;
+//				startCoord[2] += instance.getPosition().z;
+//				endCoord[0] += instance.getPosition().x;
+//				endCoord[1] += instance.getPosition().y;
+//				endCoord[2] += instance.getPosition().z;
 				
 				if (!Controller.instance().clipTest(startCoord, endCoord))
 				{
@@ -45,27 +62,27 @@ public class View implements ViewRefresher {
 			}
 		}
 		
-		if(instances.size() == 0)
-		{
-			HouseModel house = new HouseModel();
-			List<Line3D> list = house.getLines();
-			
-			Color houseColor = Color.GREEN;
-			g2d.setColor(houseColor);
-			
-			for(Line3D l : list)
-			{
-				double[] startCoord = Controller.instance().camera_clip(l.start);
-				double[] endCoord = Controller.instance().camera_clip(l.end);
-				
-				if (!Controller.instance().clipTest(startCoord, endCoord))
-				{
-					Point3D start = Controller.instance().clip_screen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
-					Point3D end = Controller.instance().clip_screen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
-					g2d.drawLine((int) Math.round(start.x), (int) Math.round(start.y), (int) Math.round(end.x), (int) Math.round(end.y));
-				}
-			}
-		}
+//		if(instances.size() == 0)
+//		{
+//			HouseModel house = new HouseModel();
+//			List<Line3D> list = house.getLines();
+//			
+//			Color houseColor = Color.GREEN;
+//			g2d.setColor(houseColor);
+//			
+//			for(Line3D l : list)
+//			{
+//				double[] startCoord = Controller.instance().camera_clip(l.start);
+//				double[] endCoord = Controller.instance().camera_clip(l.end);
+//				
+//				if (!Controller.instance().clipTest(startCoord, endCoord))
+//				{
+//					Point3D start = Controller.instance().clip_screen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
+//					Point3D end = Controller.instance().clip_screen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
+//					g2d.drawLine((int) Math.round(start.x), (int) Math.round(start.y), (int) Math.round(end.x), (int) Math.round(end.y));
+//				}
+//			}
+//		}
 	}
 
 	public View()

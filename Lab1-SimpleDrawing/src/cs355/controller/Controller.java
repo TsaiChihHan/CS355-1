@@ -18,6 +18,7 @@ import cs355.controller.states.Nothing_State;
 import cs355.controller.states.Select_State;
 import cs355.model.drawing.*;
 import cs355.model.scene.CS355Scene;
+import cs355.model.scene.Instance;
 import cs355.model.scene.Point3D;
 import cs355.view.View;
 import cs355.view.ViewRefresher;
@@ -484,18 +485,28 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		this.updating = false;
 	}
 	
-	public double[] camera_clip(Point3D point)
+	public double[] camera_clip(Point3D point, Instance instance)
 	{
 		float theta = (float) Math.toRadians(CS355Scene.instance().getCameraRotation());
-		double cameraX = CS355Scene.instance().getCameraPosition().x;
-		double cameraY = CS355Scene.instance().getCameraPosition().y;
-		double cameraZ = CS355Scene.instance().getCameraPosition().z;
+		double cameraX = CS355Scene.instance().getCameraPosition().x + instance.getPosition().x;
+		double cameraY = CS355Scene.instance().getCameraPosition().y + instance.getPosition().y;
+		double cameraZ = CS355Scene.instance().getCameraPosition().z + instance.getPosition().z;
 		double e = (farPlane + nearPlane) / (farPlane - nearPlane);
 		double f = (-2 * nearPlane * farPlane) / (farPlane - nearPlane);
 
-		double x = (Math.sqrt(3) * point.x * Math.cos(theta) + Math.sqrt(3) * point.z * Math.sin(theta) + Math.sqrt(3) * (-cameraX * Math.cos(theta) - cameraZ * Math.sin(theta)));
-		double y = (Math.sqrt(3) * point.y - Math.sqrt(3) * cameraY);
-		double z = (f + e * point.z * Math.cos(theta) - e * x * Math.sin(theta) + e * (cameraX * Math.sin(theta) - cameraZ * Math.cos(theta)));
+		//World to camera translate
+		double x1 = point.x - cameraX;
+		double y1 = point.y - cameraY;
+		double z1 = point.z - cameraZ;
+		
+		//World to camera rotate
+		double x2 = x1 * Math.cos(theta) + z1 * Math.sin(theta);
+		double z2 = -x1 * Math.sin(theta) + z1 * Math.cos(theta);
+
+		//Camera to Clip
+		double x = x2 * Math.sqrt(3) + Math.sqrt(3);
+		double y = y1 * Math.sqrt(3);
+		double z = f + e * z2;		
 		double bigW = (-cameraZ * Math.cos(theta) + point.z * Math.cos(theta) + cameraX * Math.sin(theta) - point.x * Math.sin(theta));
 
 		double[] result = {x, y, z, bigW};
@@ -532,6 +543,24 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		if (startZ <= -startW || endZ <= -endW) return true;
 
 		return false;
+	}
+	
+	public AffineTransform objectToWorld3D(Instance inst) {
+		AffineTransform transform = new AffineTransform();
+		//Translation
+		transform.concatenate(new AffineTransform(1.0, 0, 0, 1.0, inst.getPosition().x, inst.getPosition().y));
+		//Rotation
+		transform.concatenate(new AffineTransform(Math.cos(inst.getRotAngle()), Math.sin(inst.getRotAngle()), -Math.sin(inst.getRotAngle()), Math.cos(inst.getRotAngle()), 0, 0));
+		return transform;
+	}
+	
+	public AffineTransform objectToView3D(Instance inst) {
+		AffineTransform transform = new AffineTransform();
+		// World to View
+        transform.concatenate(world_view());
+		// Object to World
+		transform.concatenate(objectToWorld3D(inst));
+		return transform;
 	}
 
 	public IControllerState getState()

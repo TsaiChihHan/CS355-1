@@ -8,7 +8,7 @@ import cs355.model.scene.CS355Scene;
 
 public class Camera_State implements IControllerState {
 	
-	private static final float UNIT = 1.0f;
+	private static final float UNIT = 2.0f;
 
 	public Camera_State()
 	{
