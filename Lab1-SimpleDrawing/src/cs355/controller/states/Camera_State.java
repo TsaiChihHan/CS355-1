@@ -117,12 +117,12 @@ public class Camera_State implements IControllerState {
 	
 	private void turnLeft()
 	{
-		CS355Scene.instance().camRot += UNIT/8;
+		CS355Scene.instance().camRot += UNIT;
 	}
 	
 	private void turnRight()
 	{
-		CS355Scene.instance().camRot -= UNIT/8;
+		CS355Scene.instance().camRot -= UNIT;
 	}
 	
 	private void moveUp()
@@ -139,8 +139,8 @@ public class Camera_State implements IControllerState {
 	{
 		CS355Scene.instance().camPos.x = 0;
 		CS355Scene.instance().camPos.y = 3;
-		CS355Scene.instance().camPos.z = -10;
-		CS355Scene.instance().camRot = 0.0f;
+		CS355Scene.instance().camPos.z = 10;
+		CS355Scene.instance().camRot = 180.0f;
 	}
 
 }

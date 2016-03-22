@@ -37,6 +37,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public static final double ZOOMMIN = .25;
 	public static final double ZOOMMAX = 4.0;
 	public boolean ThreeD = false;
+	public Camera_State cameraState = new Camera_State();
 	public CS355Scene scene;
 	private static final float nearPlane = 1.0f;
 	private static final float farPlane = 1000.0f;
@@ -55,10 +56,10 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		this.zoom = 1.0;
 		this.knobSize = 512;
 		this.viewCenter = new Point2D.Double(0,0);
-		CS355Scene.instance().camPos.x = 28;
+		CS355Scene.instance().camPos.x = -28;
 		CS355Scene.instance().camPos.y = -25;
-		CS355Scene.instance().camPos.z = -64;
-		CS355Scene.instance().camRot = 0.0f;
+		CS355Scene.instance().camPos.z = 64;
+		CS355Scene.instance().camRot = 180.0f;
 	}
 
 	@Override
@@ -198,12 +199,12 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 		if(!ThreeD)
 		{
 			ThreeD=!ThreeD;
-			this.state = new Camera_State();
+//			this.state = new Camera_State();
 		}
 		else
 		{
 			ThreeD=!ThreeD;
-			this.state = new Nothing_State();
+//			this.state = new Nothing_State();
 		}
 		Drawing.instance().updateView();
 	}
@@ -211,8 +212,11 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void keyPressed(Iterator<Integer> iterator)
 	{
-		state.keyPressed(iterator);
-		Drawing.instance().updateView();
+		if(ThreeD)
+		{
+			cameraState.keyPressed(iterator);
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override
@@ -482,7 +486,7 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	
 	public double[] camera_clip(Point3D point)
 	{
-		float theta = (float) CS355Scene.instance().getCameraRotation();
+		float theta = (float) Math.toRadians(CS355Scene.instance().getCameraRotation());
 		double cameraX = CS355Scene.instance().getCameraPosition().x;
 		double cameraY = CS355Scene.instance().getCameraPosition().y;
 		double cameraZ = CS355Scene.instance().getCameraPosition().z;
