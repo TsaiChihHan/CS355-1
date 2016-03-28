@@ -17,6 +17,7 @@ import cs355.controller.states.IControllerState;
 import cs355.controller.states.Nothing_State;
 import cs355.controller.states.Select_State;
 import cs355.model.drawing.*;
+import cs355.model.image.Image;
 import cs355.model.scene.CS355Scene;
 import cs355.model.scene.Instance;
 import cs355.model.scene.Point3D;
@@ -38,10 +39,12 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public static final double ZOOMMIN = .25;
 	public static final double ZOOMMAX = 4.0;
 	public boolean ThreeD = false;
+	public boolean displayImage = false;
 	public Camera_State cameraState = new Camera_State();
 	public CS355Scene scene;
 	private static final float nearPlane = 1.0f;
 	private static final float farPlane = 1000.0f;
+	public Image image;
 	
 	public static Controller instance()
 	{
@@ -223,19 +226,23 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void openImage(File file)
 	{
-		// TODO Auto-generated method stub
+		this.image = new Image();
+		this.image.open(file);
+		Drawing.instance().updateView();
 	}
 
 	@Override
 	public void saveImage(File file)
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.save(file);
 	}
 
 	@Override
 	public void toggleBackgroundDisplay()
 	{
-		// TODO Auto-generated method stub
+		displayImage = !displayImage;
+		Drawing.instance().updateView();
 	}
 
 	@Override
@@ -269,43 +276,50 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	@Override
 	public void doEdgeDetection()
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.edgeDetection();
 	}
 
 	@Override
 	public void doSharpen()
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.sharpen();
 	}
 
 	@Override
 	public void doMedianBlur()
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.medianBlur();
 	}
 
 	@Override
 	public void doUniformBlur()
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.uniformBlur();
 	}
 
 	@Override
 	public void doGrayscale()
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.grayscale();
 	}
 
 	@Override
 	public void doChangeContrast(int contrastAmountNum)
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.contrast(contrastAmountNum);
 	}
 
 	@Override
 	public void doChangeBrightness(int brightnessAmountNum)
 	{
-		// TODO Auto-generated method stub
+		if(this.image != null)
+			this.image.brightness(brightnessAmountNum);
 	}
 
 	@Override

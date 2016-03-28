@@ -5,21 +5,34 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
 import cs355.GUIFunctions;
 import cs355.controller.Controller;
-import cs355.controller.states.IControllerState;
 import cs355.model.drawing.*;
+import cs355.model.image.Image;
 import cs355.model.scene.CS355Scene;
-import cs355.model.scene.HouseModel;
 import cs355.model.scene.Instance;
 import cs355.model.scene.Line3D;
 import cs355.model.scene.Point3D;
 
 public class View implements ViewRefresher {
+	
+	private void renderImage(Graphics2D g2d)
+	{
+		Image image = Controller.instance().image;
+		if(image == null)
+			return;
+		
+		g2d.setTransform(Controller.instance().world_view());
+		
+		BufferedImage b = image.getImage();
+		
+		g2d.drawImage(b, null, 1024-(b.getWidth()/2), 1024-(b.getHeight()/2));
+	}
 	
 	private void render3D(Graphics2D g2d)
 	{
@@ -30,29 +43,12 @@ public class View implements ViewRefresher {
 		
 		for(Instance instance : instances)
 		{
-//			g2d.setTransform(Controller.instance().objectToView3D(instance));
 			g2d.setColor(instance.getColor());
 			List<Line3D> list = instance.getModel().getLines();
 			
 			for(Line3D l : list) {
-				
-//				l.start.x += instance.getPosition().x;
-//				l.start.y += instance.getPosition().y;
-//				l.start.z += instance.getPosition().z;
-//				l.end.x += instance.getPosition().x;
-//				l.end.y += instance.getPosition().y;
-//				l.end.z += instance.getPosition().z;
-				
 				double[] startCoord = Controller.instance().camera_clip(l.start, instance);
 				double[] endCoord = Controller.instance().camera_clip(l.end, instance);
-				
-//				startCoord[0] += instance.getPosition().x;
-//				startCoord[1] += instance.getPosition().y;
-//				startCoord[2] += instance.getPosition().z;
-//				endCoord[0] += instance.getPosition().x;
-//				endCoord[1] += instance.getPosition().y;
-//				endCoord[2] += instance.getPosition().z;
-				
 				if (!Controller.instance().clipTest(startCoord, endCoord))
 				{
 					Point3D start = Controller.instance().clip_screen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
@@ -61,28 +57,6 @@ public class View implements ViewRefresher {
 				}
 			}
 		}
-		
-//		if(instances.size() == 0)
-//		{
-//			HouseModel house = new HouseModel();
-//			List<Line3D> list = house.getLines();
-//			
-//			Color houseColor = Color.GREEN;
-//			g2d.setColor(houseColor);
-//			
-//			for(Line3D l : list)
-//			{
-//				double[] startCoord = Controller.instance().camera_clip(l.start);
-//				double[] endCoord = Controller.instance().camera_clip(l.end);
-//				
-//				if (!Controller.instance().clipTest(startCoord, endCoord))
-//				{
-//					Point3D start = Controller.instance().clip_screen(new Point3D(startCoord[0] / startCoord[3], startCoord[1] / startCoord[3], startCoord[2] / startCoord[3]));
-//					Point3D end = Controller.instance().clip_screen(new Point3D(endCoord[0] / endCoord[3], endCoord[1] / endCoord[3], endCoord[2] / endCoord[3]));
-//					g2d.drawLine((int) Math.round(start.x), (int) Math.round(start.y), (int) Math.round(end.x), (int) Math.round(end.y));
-//				}
-//			}
-//		}
 	}
 
 	public View()
@@ -99,6 +73,11 @@ public class View implements ViewRefresher {
 	@Override
 	public void refreshView(Graphics2D g2d)
 	{
+		if(Controller.instance().displayImage)
+		{
+			this.renderImage(g2d);
+		}
+		
 		GUIFunctions.changeSelectedColor(Drawing.instance().getCurrentColor());
 		ArrayList<Shape> shapes = (ArrayList<Shape>) Drawing.instance().getShapes();
 		int selectedShapeIndex = Drawing.instance().getCurrentShapeIndex();
@@ -169,8 +148,6 @@ public class View implements ViewRefresher {
 					break;
 			}
 		}
-		
-		
 		
 		if(Controller.instance().ThreeD)
 		{
