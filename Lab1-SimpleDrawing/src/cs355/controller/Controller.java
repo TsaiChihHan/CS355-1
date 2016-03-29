@@ -277,49 +277,70 @@ public class Controller implements CS355Controller, MouseListener, MouseMotionLi
 	public void doEdgeDetection()
 	{
 		if(this.image != null)
+		{
 			this.image.edgeDetection();
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override
 	public void doSharpen()
 	{
 		if(this.image != null)
+		{
 			this.image.sharpen();
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override
 	public void doMedianBlur()
 	{
 		if(this.image != null)
+		{
 			this.image.medianBlur();
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override
 	public void doUniformBlur()
 	{
 		if(this.image != null)
+		{
 			this.image.uniformBlur();
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override
 	public void doGrayscale()
 	{
 		if(this.image != null)
+		{
 			this.image.grayscale();
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override
 	public void doChangeContrast(int contrastAmountNum)
 	{
 		if(this.image != null)
+		{
 			this.image.contrast(contrastAmountNum);
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override
 	public void doChangeBrightness(int brightnessAmountNum)
 	{
 		if(this.image != null)
+		{
 			this.image.brightness(brightnessAmountNum);
+			Drawing.instance().updateView();
+		}
 	}
 
 	@Override

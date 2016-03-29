@@ -1,5 +1,6 @@
 package cs355.model.image;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
@@ -70,22 +71,89 @@ public class Image extends CS355Image{
 	@Override
 	public void grayscale()
 	{
-		// TODO Auto-generated method stub
+		int[] rgb = new int[3];
+		float[] hsb = new float[3];
 		
+		for (int y = 0; y < super.getHeight(); ++y) 
+		{
+			for (int x = 0; x < super.getWidth(); ++x) 
+			{
+				rgb = super.getPixel(x, y, rgb);
+				
+				hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
+				
+				hsb[1] = 0;
+				
+				Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+				rgb[0] = c.getRed();
+				rgb[1] = c.getGreen();
+				rgb[2] = c.getBlue();
+				// Set the pixel.
+				setPixel(x, y, rgb);
+			}
+		}
+		
+		bi=null;
 	}
 
 	@Override
 	public void contrast(int amount)
 	{
-		// TODO Auto-generated method stub
+		float scalar = (float) Math.pow(((amount+100)/100), 4);
+        
+		int[] rgb = new int[3];
+		float[] hsb = new float[3];
 		
+		for (int y = 0; y < super.getHeight(); ++y) 
+		{
+			for (int x = 0; x < super.getWidth(); ++x) 
+			{
+				super.getPixel(x, y, rgb);
+				
+				Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
+				
+				hsb[2] = scalar*(hsb[2]-128)+128;
+				
+				Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+				rgb[0] = c.getRed();
+				rgb[1] = c.getGreen();
+				rgb[2] = c.getBlue();
+				// Set the pixel.
+				setPixel(x, y, rgb);
+			}
+		}
+		
+		bi=null;
 	}
 
 	@Override
 	public void brightness(int amount)
 	{
-		// TODO Auto-generated method stub
+		float adjustedAmount = amount/100;
+        
+		int[] rgb = new int[3];
+		float[] hsb = new float[3];
 		
+		for (int y = 0; y < super.getHeight(); ++y) 
+		{
+			for (int x = 0; x < super.getWidth(); ++x) 
+			{
+				super.getPixel(x, y, rgb);
+				
+				Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
+				
+				hsb[2] += adjustedAmount;
+				
+				Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+				rgb[0] = c.getRed();
+				rgb[1] = c.getGreen();
+				rgb[2] = c.getBlue();
+				// Set the pixel.
+				setPixel(x, y, rgb);
+			}
+		}
+		
+		bi=null;
 	}
 
 }
