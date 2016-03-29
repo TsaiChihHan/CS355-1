@@ -50,8 +50,48 @@ public class Image extends CS355Image{
 	@Override
 	public void sharpen()
 	{
-		// TODO Auto-generated method stub
+		int[] rgb = new int[3];
 		
+		int height = super.getHeight();
+		int width = super.getWidth();
+		
+		for (int y = 0; y < height; ++y) 
+		{
+			for (int x = 0; x < width; ++x) 
+			{
+				int px = x > 0 ? x-1 : 0; //previous x, or 0
+				int py = y > 0 ? y-1 : 0; //previous y, or 0
+				int nx = x < width-1 ? x+1 : x; //next x, or x if edge
+				int ny = y < height-1 ? y+1 : y; //next y, or y if edge
+				
+				rgb[0] =	(-super.getRed(x, py)+
+							-super.getRed(px, y)+
+							(6*super.getRed(x, y))+
+							-super.getRed(nx, y)+
+							-super.getRed(x, ny))/2;
+				
+				rgb[1] =	(-super.getGreen(x, py)+
+							-super.getGreen(px, y)+
+							(6*super.getGreen(x, y))+
+							-super.getGreen(nx, y)+
+							-super.getGreen(x, ny))/2;
+				
+				rgb[2] =	(-super.getBlue(x, py)+
+							-super.getBlue(px, y)+
+							(6*super.getBlue(x, y))+
+							-super.getBlue(nx, y)+
+							-super.getBlue(x, ny))/2; 
+				
+				//ensure values are in bounds (0 <= x <= 255
+				rgb[0] = Math.max(Math.min(rgb[0], 255),0);
+				rgb[1] = Math.max(Math.min(rgb[1], 255),0);
+				rgb[2] = Math.max(Math.min(rgb[2], 255),0);
+				
+				setPixel(x, y, rgb); // Set the pixel
+			}
+		}
+		
+		bi=null; //reset buffered image so it will redraw
 	}
 
 	@Override
