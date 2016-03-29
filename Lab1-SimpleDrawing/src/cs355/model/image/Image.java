@@ -11,7 +11,6 @@ public class Image extends CS355Image{
 	public Image()
 	{
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -64,8 +63,56 @@ public class Image extends CS355Image{
 	@Override
 	public void uniformBlur()
 	{
-		// TODO Auto-generated method stub
+		int[] rgb = new int[3];
 		
+		int height = super.getHeight();
+		int width = super.getWidth();
+		
+		for (int y = 0; y < height; ++y) 
+		{
+			for (int x = 0; x < width; ++x) 
+			{
+				int px = x > 0 ? x-1 : 0; //previous x, or 0
+				int py = y > 0 ? y-1 : 0; //previous y, or 0
+				int nx = x < width-1 ? x+1 : x; //next x, or x if edge
+				int ny = y < height-1 ? y+1 : y; //next y, or y if edge
+				
+				rgb[0] =	(super.getRed(px, py)+
+							super.getRed(x, py)+
+							super.getRed(nx, py)+
+							super.getRed(px, y)+
+							super.getRed(x, y)+
+							super.getRed(nx, y)+
+							super.getRed(px, ny)+
+							super.getRed(x, ny)+
+							super.getRed(nx, ny))/9;
+				
+				rgb[1] =	(super.getBlue(px, py)+
+							super.getBlue(x, py)+
+							super.getBlue(nx, py)+
+							super.getBlue(px, y)+
+							super.getBlue(x, y)+
+							super.getBlue(nx, y)+
+							super.getBlue(px, ny)+
+							super.getBlue(x, ny)+
+							super.getBlue(nx, ny))/9;
+				
+				rgb[2] =	(super.getGreen(px, py)+
+							super.getGreen(x, py)+
+							super.getGreen(nx, py)+
+							super.getGreen(px, y)+
+							super.getGreen(x, y)+
+							super.getGreen(nx, y)+
+							super.getGreen(px, ny)+
+							super.getGreen(x, ny)+
+							super.getGreen(nx, ny))/9;
+				
+				// Set the pixel.
+				setPixel(x, y, rgb);
+			}
+		}
+		
+		bi=null;
 	}
 
 	@Override
