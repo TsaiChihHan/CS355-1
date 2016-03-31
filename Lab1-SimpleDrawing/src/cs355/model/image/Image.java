@@ -8,10 +8,31 @@ import java.util.Arrays;
 public class Image extends CS355Image{
 	
 	public BufferedImage bi = null;
+	private int[][] updatedPixels = null;
 
 	public Image()
 	{
 		super();
+	}
+	
+	private void setupUpdatedPixels()
+	{
+		if(updatedPixels == null)
+			updatedPixels = new int[super.getWidth() * super.getHeight()][3];
+	}
+	
+	private void updatePixels()
+	{
+		int height = super.getHeight();
+		int width = super.getWidth();
+		
+		for (int y = 0; y < height; ++y) 
+		{
+			for (int x = 0; x < width; ++x) 
+			{
+				setPixel(x, y, updatedPixels[width * y + x]); // Set the pixel.
+			}
+		}
 	}
 
 	@Override
@@ -39,17 +60,78 @@ public class Image extends CS355Image{
 		
         return bi;
 	}
-
+	
 	@Override
 	public void edgeDetection()
 	{
-		// TODO Auto-generated method stub
+		setupUpdatedPixels();
 		
+		int[] rgb = new int[3];
+		float[] hsb = new float[3];
+		
+		int[] xPos = new int[9];
+		int[] yPos = new int[9];
+		
+		int[] sX = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
+		int[] sY = {-1, -2, -1, 0, 0, 0, 1, 2, 1};
+		
+		int height = super.getHeight();
+		int width = super.getWidth();
+		
+		for (int y = 0; y < height; ++y) 
+		{
+			for (int x = 0; x < width; ++x) 
+			{
+				int px = x > 0 ? x-1 : 0; //previous x, or 0
+				int py = y > 0 ? y-1 : 0; //previous y, or 0
+				int nx = x < width-1 ? x+1 : x; //next x, or x if edge
+				int ny = y < height-1 ? y+1 : y; //next y, or y if edge
+				
+				xPos[0] = px; 	yPos[0] = py;
+				xPos[1] = x; 	yPos[1] = py;
+				xPos[2] = nx; 	yPos[2] = py;
+				xPos[3] = px; 	yPos[3] = y;
+				xPos[4] = x; 	yPos[4] = y;
+				xPos[5] = nx; 	yPos[5] = y;
+				xPos[6] = px; 	yPos[6] = ny;
+				xPos[7] = x; 	yPos[7] = ny;
+				xPos[8] = nx; 	yPos[8] = ny;
+				
+				double xTotal = 0;
+				double yTotal = 0;
+				
+				for(int i=0;i<9;i++)
+				{
+					rgb = super.getPixel(xPos[i], yPos[i], rgb);
+					hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
+					
+					xTotal += (sX[i]*hsb[2]);
+					yTotal += (sY[i]*hsb[2]);
+				}
+				
+				xTotal /= 8;
+				yTotal /= 8;
+				
+				double magnitude = Math.sqrt(xTotal*xTotal + yTotal*yTotal);
+				int colorValue = Math.min((int) ( magnitude * 255) + 128, 255);
+				
+				updatedPixels[width * y + x][0] = colorValue;
+				updatedPixels[width * y + x][1] = colorValue;
+				updatedPixels[width * y + x][2] = colorValue;
+			}
+		}
+		
+		updatePixels();
+		
+		bi=null; //reset buffered image so it will redraw
 	}
+	
 
 	@Override
 	public void sharpen()
 	{
+		setupUpdatedPixels();
+		
 		int[] rgb = new int[3];
 		
 		int height = super.getHeight();
@@ -83,21 +165,22 @@ public class Image extends CS355Image{
 							-super.getBlue(x, ny))/2; 
 				
 				//ensure values are in bounds (0 <= x <= 255
-				rgb[0] = Math.max(Math.min(rgb[0], 255),0);
-				rgb[1] = Math.max(Math.min(rgb[1], 255),0);
-				rgb[2] = Math.max(Math.min(rgb[2], 255),0);
-				
-				setPixel(x, y, rgb); // Set the pixel
+				updatedPixels[width * y + x][0] = Math.max(Math.min(rgb[0], 255),0);
+				updatedPixels[width * y + x][1] = Math.max(Math.min(rgb[1], 255),0);
+				updatedPixels[width * y + x][2] = Math.max(Math.min(rgb[2], 255),0);
 			}
 		}
+		
+		updatePixels();
 		
 		bi=null; //reset buffered image so it will redraw
 	}
 
+	
 	@Override
 	public void medianBlur()
 	{
-		int[] rgb = new int[3];
+		setupUpdatedPixels();
 		
 		int height = super.getHeight();
 		int width = super.getWidth();
@@ -147,21 +230,22 @@ public class Image extends CS355Image{
 				Arrays.sort(blue);
 				
 				//grab median color
-				rgb[0] = red[4];
-				rgb[1] = green[4];
-				rgb[2] = blue[4];
-				
-				setPixel(x, y, rgb); // Set the pixel
+				updatedPixels[width * y + x][0] = red[4];
+				updatedPixels[width * y + x][1] = green[4];
+				updatedPixels[width * y + x][2] = blue[4];
 			}
 		}
+		
+		updatePixels();
 		
 		bi=null; //reset buffered image so it will redraw
 	}
 
+	
 	@Override
 	public void uniformBlur()
 	{
-		int[] rgb = new int[3];
+		setupUpdatedPixels();
 		
 		int height = super.getHeight();
 		int width = super.getWidth();
@@ -176,7 +260,8 @@ public class Image extends CS355Image{
 				int ny = y < height-1 ? y+1 : y; //next y, or y if edge
 				
 				//average red
-				rgb[0] =	(super.getRed(px, py)+
+				updatedPixels[width * y + x][0] =
+							(super.getRed(px, py)+
 							super.getRed(x, py)+
 							super.getRed(nx, py)+
 							super.getRed(px, y)+
@@ -187,7 +272,8 @@ public class Image extends CS355Image{
 							super.getRed(nx, ny))/9;
 				
 				//average green
-				rgb[1] =	(super.getBlue(px, py)+
+				updatedPixels[width * y + x][1] =
+							(super.getBlue(px, py)+
 							super.getBlue(x, py)+
 							super.getBlue(nx, py)+
 							super.getBlue(px, y)+
@@ -198,7 +284,8 @@ public class Image extends CS355Image{
 							super.getBlue(nx, ny))/9;
 				
 				//average blue
-				rgb[2] =	(super.getGreen(px, py)+
+				updatedPixels[width * y + x][2] =
+							(super.getGreen(px, py)+
 							super.getGreen(x, py)+
 							super.getGreen(nx, py)+
 							super.getGreen(px, y)+
@@ -207,14 +294,15 @@ public class Image extends CS355Image{
 							super.getGreen(px, ny)+
 							super.getGreen(x, ny)+
 							super.getGreen(nx, ny))/9;
-				
-				setPixel(x, y, rgb); // Set the pixel
 			}
 		}
+		
+		updatePixels();
 		
 		bi=null; //reset buffered image so it will redraw
 	}
 
+	
 	@Override
 	public void grayscale()
 	{
@@ -243,10 +331,11 @@ public class Image extends CS355Image{
 		bi=null; //reset buffered image so it will redraw
 	}
 
+	
 	@Override
 	public void contrast(int amount)
 	{
-		float scalar = (float) Math.pow(((amount+100)/100), 4);
+		float scalar = (float) Math.pow(((amount+100.0f)/100.0f), 4.0f);
         
 		int[] rgb = new int[3];
 		float[] hsb = new float[3];
@@ -255,11 +344,13 @@ public class Image extends CS355Image{
 		{
 			for (int x = 0; x < super.getWidth(); ++x) 
 			{
-				super.getPixel(x, y, rgb);
+				rgb = super.getPixel(x, y, rgb);
 				
-				Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
+				hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
 				
-				hsb[2] = scalar*(hsb[2]-128)+128; //contrast the brightness or somethin
+				hsb[2] = scalar*(hsb[2]-0.5f)+0.5f; //contrast the brightness or somethin
+				
+				hsb[2] = Math.max(Math.min(hsb[2], 1.0f),-1.0f); //keep in range
 				
 				Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
 				rgb[0] = c.getRed();
@@ -273,10 +364,11 @@ public class Image extends CS355Image{
 		bi=null; //reset buffered image so it will redraw
 	}
 
+	
 	@Override
 	public void brightness(int amount)
 	{
-		float adjustedAmount = amount/100;
+		float adjustedAmount = amount/100.0f;
         
 		int[] rgb = new int[3];
 		float[] hsb = new float[3];
@@ -285,13 +377,16 @@ public class Image extends CS355Image{
 		{
 			for (int x = 0; x < super.getWidth(); ++x) 
 			{
-				super.getPixel(x, y, rgb);
+				rgb = super.getPixel(x, y, rgb);
 				
-				Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
+				hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
 				
 				hsb[2] += adjustedAmount; //adjust brightness
 				
+				hsb[2] = Math.max(Math.min(hsb[2], 1.0f),-1.0f); //keep in range
+				
 				Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+				
 				rgb[0] = c.getRed();
 				rgb[1] = c.getGreen();
 				rgb[2] = c.getBlue();
