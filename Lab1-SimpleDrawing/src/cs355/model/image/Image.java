@@ -348,14 +348,17 @@ public class Image extends CS355Image{
 				
 				hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], hsb);
 				
-				hsb[2] = scalar*(hsb[2]-0.5f)+0.5f; //contrast the brightness or somethin
+				hsb[2] = scalar*(hsb[2]-0.5f)+0.5f; //adjust brightness
 				
-				hsb[2] = Math.max(Math.min(hsb[2], 1.0f),-1.0f); //keep in range
+				hsb[2] = Math.max(Math.min(hsb[2], 1.0f), 0.0f); //keep in range
 				
 				Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+				
 				rgb[0] = c.getRed();
 				rgb[1] = c.getGreen();
 				rgb[2] = c.getBlue();
+
+				setPixel(x, y, rgb); // Set the pixel
 
 				setPixel(x, y, rgb); // Set the pixel.
 			}
@@ -383,7 +386,7 @@ public class Image extends CS355Image{
 				
 				hsb[2] += adjustedAmount; //adjust brightness
 				
-				hsb[2] = Math.max(Math.min(hsb[2], 1.0f),-1.0f); //keep in range
+				hsb[2] = Math.max(Math.min(hsb[2], 1.0f), 0.0f); //keep in range
 				
 				Color c = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
 				
